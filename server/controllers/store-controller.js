@@ -9,35 +9,48 @@ const auth = require('../auth')
     @author McKilla Gorilla
 */
 
-createPlaylist = (req, res) => {
+createPlaylist = async (req, res) => {
     if (auth.verifyUser(req) === null) {
-        return res.status(401).json({
-            errorMessage: 'UNAUTHORIZED'
-        })
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
     }
 
-    const body = req.body;
-    console.log("createPlaylist body: " + JSON.stringify(body));
-    if (!body) {
-        return res.status(400).json({
-            success: false,
-            error: 'You must provide a Playlist',
-        })
-    }
-
-    async function asyncCreate() {
-        try {
-            const user = await db.getUserById(req.userId);
-            if (!user) {
-                return res.status(404).json({ success: false, error: 'User not found' });
-            }
-            const playlist = await db.createPlaylist(body, user);
-            return res.status(201).json({ playlist: playlist });
-        } catch (error) {
-            return res.status(400).json({ errorMessage: 'Playlist Not Created' });
+    try {
+        const user = await db.getUserById(req.userId);
+        if (!user) {
+            return res.status(404).json({ errorMessage: 'User not found' });
         }
+        const userPlaylists = await db.getPlaylistPairs(user);
+
+        let maxNumber = -1;
+        const untitledRegex = /^Untitled (\d+)$/;
+
+        userPlaylists.forEach(playlist => {
+            const match = playlist.name.match(untitledRegex);
+            if (match) {
+                const num = parseInt(match[1]);
+                if (num > maxNumber) maxNumber = num;
+            }
+        });
+
+        const newName = `Untitled ${maxNumber + 1}`;
+
+        const playlistData = {
+            name: newName,
+            ownerEmail: user.email,
+            ownerName: user.userName,
+            songs: [],
+            published: false,
+            listenerIds: []
+        };
+
+        const playlist = await db.createPlaylist(playlistData, user);
+        return res.status(201).json({
+            success: true,
+            playlist: playlist
+        });
+    } catch (err) {
+        return res.status(400).json({ errorMessage: 'Playlist Not Created' });
     }
-    asyncCreate();
 }
 
 deletePlaylist = async (req, res) => {
@@ -67,9 +80,7 @@ deletePlaylist = async (req, res) => {
 
 getPlaylistById = async (req, res) => {
     if (auth.verifyUser(req) === null) {
-        return res.status(401).json({
-            errorMessage: 'UNAUTHORIZED'
-        })
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
     }
     console.log("Find Playlist with id: " + JSON.stringify(req.params.id));
 
@@ -90,9 +101,7 @@ getPlaylistById = async (req, res) => {
 
 getPlaylistPairs = async (req, res) => {
     if (auth.verifyUser(req) === null) {
-        return res.status(401).json({
-            errorMessage: 'UNAUTHORIZED'
-        })
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
     }
     console.log("getPlaylistPairs");
 
@@ -110,9 +119,7 @@ getPlaylistPairs = async (req, res) => {
 
 getPlaylists = async (req, res) => {
     if (auth.verifyUser(req) === null) {
-        return res.status(401).json({
-            errorMessage: 'UNAUTHORIZED'
-        })
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
     }
     try {
         const playlists = await db.getPlaylists();
@@ -129,13 +136,11 @@ getPlaylists = async (req, res) => {
 
 updatePlaylist = async (req, res) => {
     if (auth.verifyUser(req) === null) {
-        return res.status(401).json({
-            errorMessage: 'UNAUTHORIZED'
-        })
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
     }
 
     const body = req.body;
-    if (!body) {
+    if (!body || !body.playlist) {
         return res.status(400).json({
             success: false,
             error: 'You must provide a body to update',
@@ -147,14 +152,139 @@ updatePlaylist = async (req, res) => {
         if (!playlist) {
             return res.status(404).json({ message: 'Playlist not found!' });
         }
+
         const user = await db.getUserById(req.userId);
         if (playlist.ownerEmail !== user.email) {
             return res.status(401).json({ success: false, description: "Authentication Error" });
         }
-        await db.updatePlaylist(req.params.id, body.playlist);
-        return res.status(200).json({ success: true, id: req.params.id, message: 'Playlist updated!' });
+
+        playlist.name = body.playlist.name;
+        playlist.songs = body.playlist.songs;
+        playlist.published = body.playlist.published;
+
+        await db.updatePlaylist(req.params.id, playlist);
+
+        return res.status(200).json({
+            success: true,
+            id: playlist._id,
+            message: 'Playlist updated!',
+        });
     } catch (error) {
         return res.status(404).json({ error, message: 'Playlist not updated!' });
+    }
+}
+
+createSong = async (req, res) => {
+    if (auth.verifyUser(req) === null) {
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
+    }
+    const body = req.body;
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a Song',
+        })
+    }
+
+    try {
+        const songData = {
+            title: body.title,
+            artist: body.artist,
+            year: body.year,
+            youTubeId: body.youTubeId,
+            ownerEmail: body.ownerEmail
+        };
+
+        const song = await db.createSong(songData);
+        return res.status(201).json({
+            success: true,
+            song: song,
+            message: 'Song Created!'
+        })
+    } catch (err) {
+        return res.status(400).json({
+            error: err,
+            errorMessage: 'Song Not Created!'
+        })
+    }
+}
+
+getSongs = async (req, res) => {
+    try {
+        const searchCriteria = req.query.search || "";
+        const songs = await db.getSongs(searchCriteria);
+        return res.status(200).json({
+            success: true,
+            songs: songs
+        })
+    } catch (err) {
+        return res.status(500).json({
+            error: err,
+            errorMessage: 'Failed to get songs'
+        })
+    }
+}
+
+deleteSong = async (req, res) => {
+    if (auth.verifyUser(req) === null) {
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
+    }
+
+    try {
+        const songId = req.params.id;
+        const song = await db.getSongById(songId);
+        const user = await db.getUserById(req.userId);
+
+        if (!song) {
+            return res.status(404).json({ errorMessage: 'Song not found!' });
+        }
+        if (song.ownerEmail !== user.email) {
+            return res.status(401).json({ errorMessage: "You do not own this song" });
+        }
+
+        const deletedSong = await db.deleteSong(songId);
+        return res.status(200).json({
+            success: true,
+            song: deletedSong,
+            message: 'Song Deleted!'
+        })
+    } catch (err) {
+        console.error("DELETE SONG ERROR:", err);
+        return res.status(500).json({ error: err.message, errorMessage: 'Song Not Deleted!' })
+    }
+}
+
+addSongToPlaylist = async (req, res) => {
+    if (auth.verifyUser(req) === null) {
+        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
+    }
+
+    const { playlistId, songId } = req.body;
+    if (!playlistId || !songId) {
+        return res.status(400).json({ errorMessage: 'Missing playlistId or songId' });
+    }
+
+    try {
+        const playlist = await db.getPlaylistById(playlistId);
+        if (!playlist) {
+            return res.status(404).json({ errorMessage: 'Playlist not found' });
+        }
+
+        const user = await db.getUserById(req.userId);
+        if (playlist.ownerEmail !== user.email) {
+            return res.status(401).json({ errorMessage: 'You do not own this playlist' });
+        }
+
+        playlist.songs.push(songId);
+        await db.updatePlaylist(playlistId, playlist);
+
+        return res.status(200).json({
+            success: true,
+            playlist: playlist,
+            message: 'Song Added!'
+        });
+    } catch (err) {
+        return res.status(500).json({ error: err, errorMessage: 'Failed to add song' });
     }
 }
 
@@ -164,5 +294,9 @@ module.exports = {
     getPlaylistById,
     getPlaylistPairs,
     getPlaylists,
-    updatePlaylist
+    updatePlaylist,
+    createSong,
+    getSongs,
+    deleteSong,
+    addSongToPlaylist
 }

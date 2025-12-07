@@ -3,7 +3,8 @@
   "version": "4.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "start": "nodemon index.js"
   },
   "license": "MIT",
   "dependencies": {

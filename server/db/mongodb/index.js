@@ -59,12 +59,16 @@ class MongoDatabaseManager extends DatabaseManager {
         });
     }
 
+    async getSongById(songId) {
+        return await Song.findById(songId);
+    }
+
     async deleteSong(songId) {
         const deletedSong = await Song.findOneAndDelete({ _id: songId });
         if (deletedSong) {
             await Playlist.updateMany(
                 {},
-                { $pull: { songs: songId } }
+                { $pull: { songs: deletedSong._id } }
             );
         }
         return deletedSong;
