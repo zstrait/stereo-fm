@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const DatabaseManager = require('../');
 
-const Playlist = require('./models/playlist-model');
 const User = require('./models/user-model');
+const Song = require('./models/song-model');
+const Playlist = require('./models/playlist-model');
 
 class MongoDatabaseManager extends DatabaseManager {
     constructor() {
@@ -40,6 +41,35 @@ class MongoDatabaseManager extends DatabaseManager {
         return await newUser.save();
     }
 
+    async createSong(songData) {
+        const newSong = new Song(songData);
+        return await newSong.save();
+    }
+
+    async getSongs(searchCriteria) {
+        if (!searchCriteria) {
+            return await Song.find({});
+        }
+        const regex = new RegExp(searchCriteria, 'i');
+        return await Song.find({
+            $or: [
+                { title: { $regex: regex } },
+                { artist: { $regex: regex } }
+            ]
+        });
+    }
+
+    async deleteSong(songId) {
+        const deletedSong = await Song.findOneAndDelete({ _id: songId });
+        if (deletedSong) {
+            await Playlist.updateMany(
+                {},
+                { $pull: { songs: songId } }
+            );
+        }
+        return deletedSong;
+    }
+
     async createPlaylist(playlistData, user) {
         const playlist = new Playlist(playlistData);
         user.playlists.push(playlist._id);
@@ -47,12 +77,13 @@ class MongoDatabaseManager extends DatabaseManager {
         return await playlist.save();
     }
 
+
     async deletePlaylist(playlistId) {
         return await Playlist.findOneAndDelete({ _id: playlistId });
     }
 
     async getPlaylistById(playlistId) {
-        return await Playlist.findById(playlistId);
+        return await Playlist.findById(playlistId).populate('songs');
     }
 
     async getPlaylistPairs(user) {
@@ -63,8 +94,30 @@ class MongoDatabaseManager extends DatabaseManager {
         }));
     }
 
-    async getPlaylists() {
-        return await Playlist.find({});
+    async getPlaylists(searchCriteria) {
+        let filter = { published: true };
+
+        if (searchCriteria) {
+            const regex = new RegExp(searchCriteria, 'i');
+
+            const matchingSongs = await Song.find({
+                $or: [
+                    { title: { $regex: regex } },
+                    { artist: { $regex: regex } }
+                ]
+            }, '_id');
+            const songIds = matchingSongs.map(song => song._id);
+
+            filter = {
+                published: true,
+                $or: [
+                    { name: { $regex: regex } },
+                    { ownerName: { $regex: regex } },
+                    { songs: { $in: songIds } }
+                ]
+            };
+        }
+        return await Playlist.find(filter).populate('songs');
     }
 
     async updatePlaylist(playlistId, playlistData) {

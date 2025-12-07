@@ -8,7 +8,7 @@ const playlistSchema = new Schema(
         ownerEmail: { type: String, required: true },
         ownerName: { type: String, required: true },
         songs: [{ type: ObjectId, ref: 'Song' }],
-        listeners: [{ type: String }],
+        listenerIds: [{ type: String }],
         published: { type: Boolean, default: false }
     },
     {
