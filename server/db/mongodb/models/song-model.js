@@ -1,0 +1,25 @@
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const songSchema = new Schema(
+    {
+        title: { type: String, required: true },
+        artist: { type: String, required: true },
+        year: { type: Number, required: true },
+        youTubeId: { type: String, required: true },
+        ownerEmail: { type: String, required: true },
+        listens: { type: Number, required: true, default: 0 },
+        playlists: { type: Number, required: true, default: 0 }
+    },
+    {
+        timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    },
+)
+
+songSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+module.exports = mongoose.model('Song', songSchema)
