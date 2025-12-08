@@ -1,75 +1,59 @@
-import { useContext } from 'react'
+import React, { useContext, useState } from 'react';
 import { GlobalStoreContext } from '../store'
-import Button from '@mui/material/Button';
+import AuthContext from '../auth';
 
-function SongCard(props) {
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+
+export default function SongCard({ song, selected, onSelect }) {
     const { store } = useContext(GlobalStoreContext);
-    const { song, index } = props;
+    const { auth } = useContext(AuthContext);
 
-    function handleDragStart(event) {
-        event.dataTransfer.setData("song", index);
-    }
+    const isCreatedByUser = auth.user && song.ownerEmail === auth.user.email;
+    const isSelected = selected;
 
-    function handleDragOver(event) {
-        event.preventDefault();
-    }
+    const cardStyle = {
+        backgroundColor: isSelected ? '#ffc107' : '#fff9c4',
+        border: isCreatedByUser ? '2px solid red' : '1px solid transparent',
+        borderRadius: '8px',
+        padding: '10px 15px',
+        marginBottom: '10px',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative'
+    };
 
-    function handleDragEnter(event) {
-        event.preventDefault();
-    }
+    const handleCardClick = () => {
+        onSelect();
+    };
 
-    function handleDragLeave(event) {
-        event.preventDefault();
-    }
+    const handleMenuClick = (event) => {
+        event.stopPropagation();
+        console.log("Menu Clicked");
+    };
 
-    function handleDrop(event) {
-        event.preventDefault();
-        let targetIndex = index;
-        let sourceIndex = Number(event.dataTransfer.getData("song"));
-
-        // UPDATE THE LIST
-        store.addMoveSongTransaction(sourceIndex, targetIndex);
-    }
-    function handleRemoveSong(event) {
-        store.addRemoveSongTransaction(song, index);
-    }
-    function handleClick(event) {
-        // DOUBLE CLICK IS FOR SONG EDITING
-        if (event.detail === 2) {
-            console.log("double clicked");
-            store.showEditSongModal(index, song);
-        }
-    }
-
-    let cardClass = "list-card unselected-list-card";
     return (
-        <div
-            key={index}
-            id={'song-' + index + '-card'}
-            className={cardClass}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            draggable="true"
-            onClick={handleClick}
-        >
-            {index + 1}.
-            <a
-                id={'song-' + index + '-link'}
-                className="song-link"
-                href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
-                {song.title} ({song.year}) by {song.artist}
-            </a>
-            <Button
-                sx={{transform:"translate(-5%, -5%)", width:"5px", height:"30px"}}
-                variant="contained"
-                id={"remove-song-" + index}
-                className="list-card-button"
-                onClick={handleRemoveSong}>{"\u2715"}</Button>
-        </div>
+        <Box sx={cardStyle} onClick={handleCardClick}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    {song.title} by {song.artist} ({song.year})
+                </Typography>
+                <IconButton onClick={handleMenuClick} size="small">
+                    <MoreVertIcon />
+                </IconButton>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#555' }}>
+                    Listens: {song.listens.toLocaleString()}
+                </Typography>
+                <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#555' }}>
+                    Playlists: {song.playlists}
+                </Typography>
+            </Box>
+        </Box>
     );
 }
-
-export default SongCard;
