@@ -98,12 +98,14 @@ class MongoDatabaseManager extends DatabaseManager {
         }));
     }
 
-    async getPlaylists(searchCriteria) {
+    async getPlaylists(searchCriteria, userEmail) {
         let filter = { published: true };
 
-        if (searchCriteria) {
+        if (userEmail) {
+            filter = { ownerEmail: userEmail };
+        }
+        else if (searchCriteria) {
             const regex = new RegExp(searchCriteria, 'i');
-
             const matchingSongs = await Song.find({
                 $or: [
                     { title: { $regex: regex } },
@@ -121,9 +123,10 @@ class MongoDatabaseManager extends DatabaseManager {
                 ]
             };
         }
+
         return await Playlist.find(filter).populate('songs');
     }
-
+    
     async updatePlaylist(playlistId, playlistData) {
         return await Playlist.findOneAndUpdate({ _id: playlistId }, playlistData, { new: true });
     }

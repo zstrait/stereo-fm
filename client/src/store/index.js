@@ -31,7 +31,8 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
-    HIDE_MODALS: "HIDE_MODALS"
+    HIDE_MODALS: "HIDE_MODALS",
+    LOAD_SONGS: "LOAD_SONGS"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -57,7 +58,11 @@ function GlobalStoreContextProvider(props) {
         newListCounter: 0,
         listNameActive: false,
         listIdMarkedForDeletion: null,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        currentView: "HOME",
+        searchCriteria: "",
+        sortCriteria: null,
+        songCatalog: []
     });
     const history = useHistory();
 
@@ -210,6 +215,23 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 });
             }
+            case GlobalStoreActionType.LOAD_SONGS: {
+                return setStore({
+                    currentModal: CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentList: null,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null,
+                    currentView: store.currentView,
+                    searchCriteria: store.searchCriteria,
+                    sortCriteria: store.sortCriteria,
+                    songCatalog: payload
+                });
+            }
             default:
                 return store;
         }
@@ -306,14 +328,12 @@ function GlobalStoreContextProvider(props) {
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
-            const response = await storeRequestSender.getPlaylistPairs();
+            const response = await storeRequestSender.getPlaylists(store.searchCriteria || "");
             if (response.status === 200) {
                 const responseData = await response.json();
-                let pairsArray = responseData.idNamePairs;
-                console.log(pairsArray);
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
-                    payload: pairsArray
+                    payload: responseData.data
                 });
             }
             else {
@@ -321,6 +341,7 @@ function GlobalStoreContextProvider(props) {
             }
         }
         asyncLoadIdNamePairs();
+
     }
 
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
@@ -471,6 +492,21 @@ function GlobalStoreContextProvider(props) {
         store.addCreateSongTransaction(
             playlistSize, "Untitled", "?", new Date().getFullYear(), "dQw4w9WgXcQ");
     }
+
+    store.loadSongs = function () {
+        async function asyncLoadSongs() {
+            const response = await storeRequestSender.getSongs(store.searchCriteria);
+            if (response.status === 200) {
+                const responseData = await response.json();
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_SONGS,
+                    payload: responseData.songs
+                });
+            }
+        }
+        asyncLoadSongs();
+    }
+
     // THIS FUNCDTION ADDS A CreateSong_Transaction TO THE TRANSACTION STACK
     store.addCreateSongTransaction = (index, title, artist, year, youTubeId) => {
         // ADD A SONG ITEM AND ITS NUMBER

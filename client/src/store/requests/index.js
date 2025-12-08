@@ -41,11 +41,6 @@ export const getPlaylistById = (id) => {
         credentials: 'include',
     });
 }
-export const getPlaylistPairs = () => {
-    return fetch('http://localhost:4000/store/playlistpairs/', {
-        credentials: 'include',
-    });
-}
 export const updatePlaylistById = (id, playlist) => {
     return fetch(`http://localhost:4000/store/playlist/${id}`, {
         method: 'PUT',
@@ -58,13 +53,27 @@ export const updatePlaylistById = (id, playlist) => {
         })
     });
 }
+export const getPlaylists = (searchCriteria) => {
+    return fetch(`http://localhost:4000/store/playlists?search=${searchCriteria}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+}
+
+export const getSongs = (searchCriteria) => {
+    return fetch(`http://localhost:4000/store/songs?search=${searchCriteria}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
+}
 
 const apis = {
     createPlaylist,
     deletePlaylistById,
     getPlaylistById,
-    getPlaylistPairs,
-    updatePlaylistById
+    updatePlaylistById,
+    getPlaylists,
+    getSongs
 }
 
-export default apis
+export default apis;

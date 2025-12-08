@@ -122,13 +122,14 @@ getPlaylists = async (req, res) => {
         return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
     }
     try {
-        const playlists = await db.getPlaylists();
-        if (!playlists || !playlists.length) {
-            return res
-                .status(404)
-                .json({ success: false, error: `Playlists not found` })
+        if (req.query.search) {
+            const playlists = await db.getPlaylists(req.query.search, null);
+            return res.status(200).json({ success: true, data: playlists });
+        } else {
+            const user = await db.getUserById(req.userId);
+            const playlists = await db.getPlaylists(null, user.email);
+            return res.status(200).json({ success: true, data: playlists });
         }
-        return res.status(200).json({ success: true, data: playlists })
     } catch (err) {
         return res.status(500).send();
     }
