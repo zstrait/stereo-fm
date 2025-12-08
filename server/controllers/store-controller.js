@@ -212,17 +212,25 @@ createSong = async (req, res) => {
 
 getSongs = async (req, res) => {
     try {
-        const searchCriteria = req.query.search || "";
-        const songs = await db.getSongs(searchCriteria);
+        const searchCriteria = {
+            title: req.query.title || "",
+            artist: req.query.artist || "",
+            year: req.query.year || ""
+        };
+        const sortCriteria = req.query.sort || "";
+    
+        const userId = auth.verifyUser(req);
+        const user = userId ? await db.getUserById(userId) : null;
+        
+        const result = await db.getSongs(searchCriteria, sortCriteria, user ? user.email : null);
+
         return res.status(200).json({
             success: true,
-            songs: songs
+            songs: result.songs,
+            count: result.count
         })
     } catch (err) {
-        return res.status(500).json({
-            error: err,
-            errorMessage: 'Failed to get songs'
-        })
+        return res.status(500).json({ error: err, errorMessage: 'Failed to get songs' })
     }
 }
 
@@ -289,6 +297,16 @@ addSongToPlaylist = async (req, res) => {
     }
 }
 
+incrementListens = async (req, res) => {
+    try {
+        const songId = req.params.id;
+        await db.incrementListens(songId);
+        return res.status(200).json({ success: true });
+    } catch (err) {
+        return res.status(500).send();
+    }
+}
+
 module.exports = {
     createPlaylist,
     deletePlaylist,
@@ -299,5 +317,6 @@ module.exports = {
     createSong,
     getSongs,
     deleteSong,
-    addSongToPlaylist
+    addSongToPlaylist,
+    incrementListens
 }

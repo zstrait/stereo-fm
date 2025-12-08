@@ -3,11 +3,11 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import SortIcon from '@mui/icons-material/Sort';
 
-export default function SortMenu({ sortOptions, onSort }) {
+export default function SortMenu({ sortOptions, onSort, currentSortValue }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const [currentSort, setCurrentSort] = useState(sortOptions[0] || "Sort By");
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -18,7 +18,6 @@ export default function SortMenu({ sortOptions, onSort }) {
     };
 
     const handleSort = (option) => {
-        setCurrentSort(option);
         onSort(option);
         handleClose();
     };
@@ -27,8 +26,9 @@ export default function SortMenu({ sortOptions, onSort }) {
         <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
             <Box onClick={handleClick} sx={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1 }}>
-                    Sort: <span style={{ color: '#1976d2' }}>{currentSort}</span>
+                    Sort: <span style={{ color: '#1976d2' }}>{currentSortValue}</span>
                 </Typography>
+                <SortIcon />
             </Box>
             <Menu
                 anchorEl={anchorEl}

@@ -60,9 +60,22 @@ export const getPlaylists = (searchCriteria) => {
     });
 }
 
-export const getSongs = (searchCriteria) => {
-    return fetch(`http://localhost:4000/store/songs?search=${searchCriteria}`, {
+export const getSongs = (criteria, sort) => {
+    const params = new URLSearchParams();
+    if (criteria.title) params.append('title', criteria.title);
+    if (criteria.artist) params.append('artist', criteria.artist);
+    if (criteria.year) params.append('year', criteria.year);
+    if (sort) params.append('sort', sort);
+    
+    return fetch(`http://localhost:4000/store/songs?${params.toString()}`, {
         method: 'GET',
+        credentials: 'include',
+    });
+}
+
+export const incrementListens = (songId) => {
+    return fetch(`http://localhost:4000/store/song/${songId}/listen`, {
+        method: 'PUT',
         credentials: 'include',
     });
 }
@@ -73,7 +86,8 @@ const apis = {
     getPlaylistById,
     updatePlaylistById,
     getPlaylists,
-    getSongs
+    getSongs,
+    incrementListens
 }
 
 export default apis;

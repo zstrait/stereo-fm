@@ -50,19 +50,44 @@ class MongoDatabaseManager extends DatabaseManager {
         return await newSong.save();
     }
 
-    async getSongs(searchCriteria) {
-        if (!searchCriteria) {
-
-            return await Song.find({}).limit(50);
+    async getSongs(searchCriteria, sortCriteria, userEmail) {
+        let filter = {};
+        if (!searchCriteria.title && !searchCriteria.artist && !searchCriteria.year && userEmail) {
+            filter = { ownerEmail: userEmail };
         }
-        const regex = new RegExp(searchCriteria, 'i');
+        else {
+            if (searchCriteria.title) {
+                filter.title = { $regex: new RegExp(searchCriteria.title, 'i') };
+            }
+            if (searchCriteria.artist) {
+                filter.artist = { $regex: new RegExp(searchCriteria.artist, 'i') };
+            }
+            if (searchCriteria.year) {
+                filter.year = parseInt(searchCriteria.year);
+            }
+        }
 
-        return await Song.find({
-            $or: [
-                { title: { $regex: regex } },
-                { artist: { $regex: regex } }
-            ]
-        }).limit(50);
+        let sort = {};
+        if (sortCriteria) {
+            switch (sortCriteria) {
+                case "Title (A-Z)": sort = { title: 1 }; break;
+                case "Title (Z-A)": sort = { title: -1 }; break;
+                case "Artist (A-Z)": sort = { artist: 1 }; break;
+                case "Artist (Z-A)": sort = { artist: -1 }; break;
+                case "Year (High-Low)": sort = { year: -1 }; break;
+                case "Year (Low-High)": sort = { year: 1 }; break;
+                case "Listens (High-Low)": sort = { listens: -1 }; break;
+                case "Listens (Low-High)": sort = { listens: 1 }; break;
+                case "Playlists (High-Low)": sort = { playlists: -1 }; break;
+                case "Playlists (Low-High)": sort = { playlists: 1 }; break;
+                default: sort = { title: 1 };
+            }
+        }
+
+        const songs = await Song.find(filter).sort(sort).limit(50);
+        const count = await Song.countDocuments(filter);
+
+        return { songs, count };
     }
 
     async getSongById(songId) {
@@ -134,6 +159,14 @@ class MongoDatabaseManager extends DatabaseManager {
 
     async updatePlaylist(playlistId, playlistData) {
         return await Playlist.findOneAndUpdate({ _id: playlistId }, playlistData, { new: true });
+    }
+
+    async incrementListens(songId) {
+        return await Song.findByIdAndUpdate(
+            songId,
+            { $inc: { listens: 1 } },
+            { new: true }
+        );
     }
 
     async clear() {
