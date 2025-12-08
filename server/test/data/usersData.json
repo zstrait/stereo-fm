@@ -1,0 +1,52 @@
+[
+  {
+    "userName": "user1",
+    "email": "user1@playlister.com",
+    "password": "user1pass"
+  },
+  {
+    "userName": "user2",
+    "email": "user2@playlister.com",
+    "password": "user2pass"
+  },
+  {
+    "userName": "user3",
+    "email": "user3@playlister.com",
+    "password": "user3pass"
+  },
+  {
+    "userName": "user4",
+    "email": "user4@playlister.com",
+    "password": "user4pass"
+  },
+  {
+    "userName": "user5",
+    "email": "user5@playlister.com",
+    "password": "user5pass"
+  },
+  {
+    "userName": "user6",
+    "email": "user6@playlister.com",
+    "password": "user6pass"
+  },
+  {
+    "userName": "user7",
+    "email": "user7@playlister.com",
+    "password": "user7pass"
+  },
+  {
+    "userName": "user8",
+    "email": "user8@playlister.com",
+    "password": "user8pass"
+  },
+  {
+    "userName": "user9",
+    "email": "user9@playlister.com",
+    "password": "user9pass"
+  },
+  {
+    "userName": "user10",
+    "email": "user10@playlister.com",
+    "password": "user10pass"
+  }
+]

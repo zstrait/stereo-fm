@@ -52,15 +52,17 @@ class MongoDatabaseManager extends DatabaseManager {
 
     async getSongs(searchCriteria) {
         if (!searchCriteria) {
-            return await Song.find({});
+
+            return await Song.find({}).limit(50);
         }
         const regex = new RegExp(searchCriteria, 'i');
+
         return await Song.find({
             $or: [
                 { title: { $regex: regex } },
                 { artist: { $regex: regex } }
             ]
-        });
+        }).limit(50);
     }
 
     async getSongById(songId) {

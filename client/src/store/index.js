@@ -495,7 +495,8 @@ function GlobalStoreContextProvider(props) {
 
     store.loadSongs = function () {
         async function asyncLoadSongs() {
-            const response = await storeRequestSender.getSongs(store.searchCriteria);
+            const criteria = store.searchCriteria || "";
+            const response = await storeRequestSender.getSongs(criteria);
             if (response.status === 200) {
                 const responseData = await response.json();
                 storeReducer({
