@@ -34,7 +34,8 @@ export const GlobalStoreActionType = {
     HIDE_MODALS: "HIDE_MODALS",
     LOAD_SONGS: "LOAD_SONGS",
     SET_SEARCH_CRITERIA: "SET_SEARCH_CRITERIA",
-    SET_SORT_CRITERIA: "SET_SORT_CRITERIA"
+    SET_SORT_CRITERIA: "SET_SORT_CRITERIA",
+    MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -45,7 +46,9 @@ const CurrentModal = {
     DELETE_LIST: "DELETE_LIST",
     EDIT_SONG: "EDIT_SONG",
     ERROR: "ERROR",
-    ADD_SONG: "ADD_SONG"
+    ADD_SONG: "ADD_SONG",
+    REMOVE_SONG: "REMOVE_SONG"
+
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -230,6 +233,13 @@ function GlobalStoreContextProvider(props) {
                 return setStore(prevStore => ({
                     ...prevStore,
                     currentModal: payload
+                }));
+            }
+            case GlobalStoreActionType.MARK_SONG_FOR_DELETION: {
+                return setStore(prevStore => ({
+                    ...prevStore,
+                    currentModal: CurrentModal.REMOVE_SONG,
+                    currentSong: payload
                 }));
             }
             default:
@@ -452,12 +462,13 @@ function GlobalStoreContextProvider(props) {
             };
             const response = await storeRequestSender.createSong(songData);
             if (response.status === 201) {
-                await store.loadSongs(); // Await the refresh
-                store.hideModals();     // THEN close
+                await store.loadSongs();
+                store.hideModals();
             }
         }
         asyncCreateSong();
     }
+
     // THIS FUNCTION MOVES A SONG IN THE CURRENT LIST FROM
     // start TO end AND ADJUSTS ALL OTHER ITEMS ACCORDINGLY
     store.moveSong = function (start, end) {
@@ -482,15 +493,35 @@ function GlobalStoreContextProvider(props) {
         // NOW MAKE IT OFFICIAL
         store.updateCurrentList();
     }
-    // THIS FUNCTION REMOVES THE SONG AT THE index LOCATION
-    // FROM THE CURRENT LIST
-    store.removeSong = function (index) {
-        let list = store.currentList;
-        list.songs.splice(index, 1);
 
-        // NOW MAKE IT OFFICIAL
-        store.updateCurrentList();
+    store.markSongForDeletion = function (song) {
+        storeReducer({
+            type: GlobalStoreActionType.MARK_SONG_FOR_DELETION,
+            payload: song
+        });
     }
+
+    store.deleteSong = function (songId) {
+        async function asyncDeleteSong() {
+            const response = await storeRequestSender.deleteSong(songId);
+            if (response.status === 200) {
+                store.hideModals();
+                store.loadSongs();
+            }
+        }
+        asyncDeleteSong();
+    }
+
+    // // THIS FUNCTION REMOVES THE SONG AT THE index LOCATION
+    // // FROM THE CURRENT LIST
+    // store.removeSong = function (index) {
+    //     let list = store.currentList;
+    //     list.songs.splice(index, 1);
+
+    //     // NOW MAKE IT OFFICIAL
+    //     store.updateCurrentList();
+    // }
+
     // THIS FUNCTION UPDATES THE TEXT IN THE ITEM AT index TO text
     store.updateSong = function (index, songData) {
         let list = store.currentList;

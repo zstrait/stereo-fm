@@ -71,6 +71,13 @@ export const createSong = (songData) => {
     });
 }
 
+export const deleteSong = (songId) => {
+    return fetch(`http://localhost:4000/store/song/${songId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    });
+}
+
 export const getSongs = (criteria, sort) => {
     const params = new URLSearchParams();
     if (criteria.title) params.append('title', criteria.title);
@@ -98,6 +105,7 @@ const apis = {
     updatePlaylistById,
     getPlaylists,
     createSong,
+    deleteSong,
     getSongs,
     incrementListens
 }

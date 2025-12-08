@@ -6,6 +6,7 @@ import SortMenu from './SortMenu';
 import SongCard from './SongCard';
 import YouTubePlayer from './YouTubePlayer';
 import AddSongModal from './AddSongModal';
+import RemoveSongModal from './RemoveSongModal';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -126,6 +127,7 @@ export default function SongCatalogScreen() {
                     </Box>
                 )}
                 <AddSongModal />
+                 <RemoveSongModal />
             </Box>
         </Box>
     );

@@ -1,7 +1,7 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth';
-
+import SongCardMenu from './SongCardMenu';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -10,6 +10,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 export default function SongCard({ song, selected, onSelect }) {
     const { store } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
     const isCreatedByUser = auth.user && song.ownerEmail === auth.user.email;
     const isSelected = selected;
@@ -30,9 +31,13 @@ export default function SongCard({ song, selected, onSelect }) {
         onSelect();
     };
 
-    const handleMenuClick = (event) => {
+    const handleMenuOpen = (event) => {
         event.stopPropagation();
-        console.log("Menu Clicked");
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null);
     };
 
     return (
@@ -41,11 +46,12 @@ export default function SongCard({ song, selected, onSelect }) {
                 <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
                     {song.title} by {song.artist} ({song.year})
                 </Typography>
-                <IconButton onClick={handleMenuClick} size="small">
-                    <MoreVertIcon />
-                </IconButton>
+                {auth.loggedIn && (
+                    <IconButton onClick={handleMenuOpen} size="small">
+                        <MoreVertIcon />
+                    </IconButton>
+                )}
             </Box>
-
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', color: '#555' }}>
                     Listens: {song.listens.toLocaleString()}
@@ -54,6 +60,11 @@ export default function SongCard({ song, selected, onSelect }) {
                     Playlists: {song.playlists}
                 </Typography>
             </Box>
+            <SongCardMenu
+                song={song}
+                anchorEl={menuAnchorEl}
+                onClose={handleMenuClose}
+            />
         </Box>
     );
 }
