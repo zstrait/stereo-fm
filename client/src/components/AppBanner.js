@@ -13,6 +13,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 export default function AppBanner() {
     const { auth } = useContext(AuthContext);
@@ -107,6 +108,16 @@ export default function AppBanner() {
                     >
                         <Link onClick={handleHouseClick} style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
                     </Typography>
+
+                    <Box sx={{ display: 'flex', gap: 2, ml: 2 }}>
+                        <Link to='/playlists/' style={{ textDecoration: 'none' }}>
+                            <Button variant="contained" sx={{ bgcolor: 'secondary.main', color: 'white', borderRadius: "16px", textTransform: 'none' }}>Playlists</Button>
+                        </Link>
+                        <Link to='/songs/' style={{ textDecoration: 'none' }}>
+                            <Button variant="contained" sx={{ bgcolor: 'secondary.main', color: 'white', borderRadius: "16px", textTransform: 'none' }}>Song Catalog</Button>
+                        </Link>
+                    </Box>
+
                     <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
                     <Box sx={{ height: "90px", display: { xs: 'none', md: 'flex' } }}>
                         <IconButton
