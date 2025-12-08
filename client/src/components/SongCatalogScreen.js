@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { GlobalStoreContext } from '../store';
+import AuthContext from '../auth';
 import SearchMenu from './SearchMenu';
 import SortMenu from './SortMenu';
 import SongCard from './SongCard';
 import YouTubePlayer from './YouTubePlayer';
+import AddSongModal from './AddSongModal';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -11,12 +13,18 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export default function SongCatalogScreen() {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [selectedSongId, setSelectedSongId] = useState(null);
 
     useEffect(() => {
         store.loadSongs();
-        store.loadSongs();
     }, [store.searchCriteria, store.sortCriteria]);
+
+    useEffect(() => {
+        return () => {
+            store.setSearchCriteria({});
+        }
+    }, []);
 
     const handleSearch = (searchTerms) => {
         const criteria = {
@@ -26,6 +34,10 @@ export default function SongCatalogScreen() {
         };
         store.setSearchCriteria(criteria);
     };
+
+    const handleNewSong = () => {
+        store.showAddSongModal();
+    }
 
     const handleSort = (sortCriteria) => {
         console.log(sortCriteria);
@@ -105,12 +117,15 @@ export default function SongCatalogScreen() {
                     ))}
                 </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Button variant="contained" sx={{ borderRadius: 5, px: 3, gap: 1 }}>
-                      <AddCircleOutlineIcon/>
-                        New Song
-                    </Button>
-                </Box>
+                {auth.loggedIn && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Button variant="contained" sx={{ borderRadius: 5, px: 3, gap: 1 }} onClick={handleNewSong}>
+                            <AddCircleOutlineIcon />
+                            New Song
+                        </Button>
+                    </Box>
+                )}
+                <AddSongModal />
             </Box>
         </Box>
     );

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth';
 
