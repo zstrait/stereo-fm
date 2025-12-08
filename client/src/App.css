@@ -113,6 +113,12 @@ body {
     border: none;
     border-radius: 8px;
     font-size: 18px;
+    /* Additions for Link compatibility */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 

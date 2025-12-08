@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export default function WelcomeScreen() {
     return (
         <>
@@ -5,9 +7,9 @@ export default function WelcomeScreen() {
                 <span className="welcome-title">Playlister</span>
                 <div className="welcome-logo"></div>
                 <div className="welcome-buttons-container">
-                    <button className="welcome-button">Continue as Guest</button>
-                    <button className="welcome-button">Login</button>
-                    <button className="welcome-button">Create Account</button>
+                    <Link to="/" className="welcome-button">Continue as Guest</Link>
+                    <Link to="/login" className="welcome-button">Login</Link>
+                    <Link to="/register" className="welcome-button">Create Account</Link>
                 </div>
             </div>
         </>
