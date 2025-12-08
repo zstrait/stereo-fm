@@ -35,7 +35,7 @@ export default function EditAccountScreen() {
             setFormData({
                 userName: auth.user.userName,
                 email: auth.user.email,
-                password: "", // Password starts empty
+                password: "", 
                 passwordVerify: ""
             });
             setAvatar(auth.user.avatar || "");
