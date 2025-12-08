@@ -41,6 +41,10 @@ class MongoDatabaseManager extends DatabaseManager {
         return await newUser.save();
     }
 
+    async updateUser(email, userData) {
+        return await User.findOneAndUpdate({ email: email }, userData, { new: true });
+    }
+
     async createSong(songData) {
         const newSong = new Song(songData);
         return await newSong.save();
@@ -80,7 +84,6 @@ class MongoDatabaseManager extends DatabaseManager {
         await user.save();
         return await playlist.save();
     }
-
 
     async deletePlaylist(playlistId) {
         return await Playlist.findOneAndDelete({ _id: playlistId });
@@ -126,7 +129,7 @@ class MongoDatabaseManager extends DatabaseManager {
 
         return await Playlist.find(filter).populate('songs');
     }
-    
+
     async updatePlaylist(playlistId, playlistData) {
         return await Playlist.findOneAndUpdate({ _id: playlistId }, playlistData, { new: true });
     }

@@ -58,11 +58,23 @@ export const registerUser = (userName, email, password, passwordVerify, avatar) 
     });
 }
 
+export const updateUser = (email, userData) => {
+    return fetch(`http://localhost:4000/auth/user/${email}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(userData)
+    });
+}
+
 const apis = {
     getLoggedIn,
-    registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    registerUser,
+    updateUser
 }
 
 export default apis

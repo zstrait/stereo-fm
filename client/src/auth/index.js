@@ -107,6 +107,25 @@ function AuthContextProvider(props) {
         }
     }
 
+    auth.updateUser = async function (email, userData) {
+        try {
+            const response = await authRequestSender.updateUser(email, userData);
+            if (response.status === 200) {
+                const responseData = await response.json();
+                authReducer({
+                    type: AuthActionType.GET_LOGGED_IN,
+                    payload: {
+                        loggedIn: true,
+                        user: responseData.user
+                    }
+                });
+                history.goBack();
+            }
+        } catch (error) {
+            console.error("Error updating user:", error);
+        }
+    }
+
     auth.loginUser = async function (email, password) {
         try {
             const response = await authRequestSender.loginUser(email, password);

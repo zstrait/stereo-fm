@@ -174,9 +174,66 @@ registerUser = async (req, res) => {
     }
 }
 
+updateUser = async (req, res) => {
+    try {
+        const userId = auth.verifyUser(req);
+        if (!userId) {
+            return res.status(401).json({ errorMessage: "Unauthorized" });
+        }
+
+        const { email } = req.params;
+        const { userName, password, passwordVerify, avatar } = req.body;
+
+        if (!userName || !avatar) {
+            return res.status(400).json({ errorMessage: "Please enter all required fields." });
+        }
+
+        let updateData = {
+            userName: userName,
+            avatar: avatar
+        };
+
+        if (password && password.length > 0) {
+            if (password.length < 8) {
+                return res.status(400).json({ errorMessage: "Please enter a password of at least 8 characters." });
+            }
+            if (password !== passwordVerify) {
+                return res.status(400).json({ errorMessage: "Please enter the same password twice." });
+            }
+
+            const saltRounds = 10;
+            const salt = await bcrypt.genSalt(saltRounds);
+            const passwordHash = await bcrypt.hash(password, salt);
+
+            updateData.passwordHash = passwordHash;
+        }
+
+        const loggedInUser = await db.getUserById(userId);
+        if (loggedInUser.email !== email) {
+            return res.status(401).json({ errorMessage: "Unauthorized" });
+        }
+
+        const updatedUser = await db.updateUser(email, updateData);
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                userName: updatedUser.userName,
+                email: updatedUser.email,
+                avatar: updatedUser.avatar
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send();
+    }
+}
+
 module.exports = {
     getLoggedIn,
-    registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    registerUser,
+    updateUser
 }
