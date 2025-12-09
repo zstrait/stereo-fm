@@ -185,11 +185,7 @@ function GlobalStoreContextProvider(props) {
                 return setStore(prevStore => ({
                     ...prevStore,
                     currentModal: CurrentModal.EDIT_SONG,
-                    currentSongIndex: payload.currentSongIndex,
-                    currentSong: payload.currentSong,
-                    listNameActive: false,
-                    listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    currentSong: payload
                 }));
             }
             case GlobalStoreActionType.REMOVE_SONG: {
@@ -242,6 +238,7 @@ function GlobalStoreContextProvider(props) {
                     currentSong: payload
                 }));
             }
+
             default:
                 return store;
         }
@@ -396,12 +393,13 @@ function GlobalStoreContextProvider(props) {
             payload: "ADD_SONG"
         });
     }
-    store.showEditSongModal = (songIndex, songToEdit) => {
+    store.showEditSongModal = function (song) {
         storeReducer({
             type: GlobalStoreActionType.EDIT_SONG,
-            payload: { currentSongIndex: songIndex, currentSong: songToEdit }
+            payload: song
         });
     }
+
     store.hideModals = () => {
         auth.errorMessage = null;
         storeReducer({
@@ -469,6 +467,17 @@ function GlobalStoreContextProvider(props) {
         asyncCreateSong();
     }
 
+    store.updateSong = function (songId, songData) {
+        async function asyncUpdateSong() {
+            const response = await storeRequestSender.updateSong(songId, songData);
+            if (response.status === 200) {
+                store.hideModals();
+                store.loadSongs();
+            }
+        }
+        asyncUpdateSong();
+    }
+
     // THIS FUNCTION MOVES A SONG IN THE CURRENT LIST FROM
     // start TO end AND ADJUSTS ALL OTHER ITEMS ACCORDINGLY
     store.moveSong = function (start, end) {
@@ -512,28 +521,6 @@ function GlobalStoreContextProvider(props) {
         asyncDeleteSong();
     }
 
-    // // THIS FUNCTION REMOVES THE SONG AT THE index LOCATION
-    // // FROM THE CURRENT LIST
-    // store.removeSong = function (index) {
-    //     let list = store.currentList;
-    //     list.songs.splice(index, 1);
-
-    //     // NOW MAKE IT OFFICIAL
-    //     store.updateCurrentList();
-    // }
-
-    // THIS FUNCTION UPDATES THE TEXT IN THE ITEM AT index TO text
-    store.updateSong = function (index, songData) {
-        let list = store.currentList;
-        let song = list.songs[index];
-        song.title = songData.title;
-        song.artist = songData.artist;
-        song.year = songData.year;
-        song.youTubeId = songData.youTubeId;
-
-        // NOW MAKE IT OFFICIAL
-        store.updateCurrentList();
-    }
     store.addNewSong = () => {
         let playlistSize = store.getPlaylistSize();
         store.addCreateSongTransaction(

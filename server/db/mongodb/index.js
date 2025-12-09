@@ -50,6 +50,10 @@ class MongoDatabaseManager extends DatabaseManager {
         return await newSong.save();
     }
 
+    async updateSong(songId, songData) {
+        return await Song.findByIdAndUpdate(songId, songData, { new: true });
+    }
+    
     async getSongs(searchCriteria, sortCriteria, userEmail) {
         let filter = {};
         if (!searchCriteria.title && !searchCriteria.artist && !searchCriteria.year && userEmail) {
@@ -104,6 +108,7 @@ class MongoDatabaseManager extends DatabaseManager {
         }
         return deletedSong;
     }
+    
 
     async createPlaylist(playlistData, user) {
         const playlist = new Playlist(playlistData);

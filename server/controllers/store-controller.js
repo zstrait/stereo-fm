@@ -210,6 +210,29 @@ createSong = async (req, res) => {
     }
 }
 
+updateSong = async (req, res) => {
+    try {
+        const songId = req.params.id;
+        const body = req.body;
+        if (!body) {
+            return res.status(400).json({ errorMessage: 'You must provide a body to update' });
+        }
+        const song = await db.getSongById(songId);
+        if (!song) {
+            return res.status(404).json({ errorMessage: 'Song not found!' });
+        }
+        const user = await db.getUserById(req.userId);
+        if (song.ownerEmail !== user.email) {
+            return res.status(401).json({ errorMessage: "You do not own this song" });
+        }
+
+        const updatedSong = await db.updateSong(songId, body);
+        return res.status(200).json({ success: true, song: updatedSong });
+    } catch (err) {
+        return res.status(500).json({ errorMessage: 'Song Not Updated!' });
+    }
+}
+
 getSongs = async (req, res) => {
     try {
         const searchCriteria = {
@@ -315,6 +338,7 @@ module.exports = {
     getPlaylists,
     updatePlaylist,
     createSong,
+    updateSong,
     getSongs,
     deleteSong,
     addSongToPlaylist,

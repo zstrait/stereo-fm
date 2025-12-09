@@ -9,23 +9,23 @@ export default function SongCardMenu({ song, anchorEl, onClose }) {
     const { store } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
     const open = Boolean(anchorEl);
-
     const isOwner = auth.user && auth.user.email === song.ownerEmail;
+
+    const handleAddToPlaylist = (event) => {
+        event.stopPropagation();
+        onClose();
+    };
 
     const handleEdit = (event) => {
         event.stopPropagation();
         onClose();
+        store.showEditSongModal(song);
     };
 
     const handleDelete = (event) => {
         event.stopPropagation();
         onClose();
         store.markSongForDeletion(song);
-    };
-
-    const handleAddToPlaylist = (event) => {
-        event.stopPropagation();
-        onClose();
     };
 
     return (

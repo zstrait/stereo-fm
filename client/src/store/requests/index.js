@@ -71,6 +71,17 @@ export const createSong = (songData) => {
     });
 }
 
+export const updateSong = (songId, songData) => {
+    return fetch(`http://localhost:4000/store/song/${songId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(songData)
+    });
+}
+
 export const deleteSong = (songId) => {
     return fetch(`http://localhost:4000/store/song/${songId}`, {
         method: 'DELETE',
@@ -105,6 +116,7 @@ const apis = {
     updatePlaylistById,
     getPlaylists,
     createSong,
+    updateSong,
     deleteSong,
     getSongs,
     incrementListens
