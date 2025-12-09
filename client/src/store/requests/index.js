@@ -16,18 +16,14 @@
 // WORK, AND SOME REQUIRE DATA, WHICH WE WE WILL FORMAT HERE, FOR WHEN
 // WE NEED TO PUT THINGS INTO THE DATABASE OR IF WE HAVE SOME
 // CUSTOM FILTERS FOR QUERIES
-export const createPlaylist = (newListName, newSongs, userEmail) => {
+export const createPlaylist = () => { // Removed args
     return fetch('http://localhost:4000/store/playlist/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-            name: newListName,
-            songs: newSongs,
-            ownerEmail: userEmail
-        })
+        body: JSON.stringify({})
     });
 }
 export const deletePlaylistById = (id) => {
@@ -53,10 +49,30 @@ export const updatePlaylistById = (id, playlist) => {
         })
     });
 }
-export const getPlaylists = (searchCriteria) => {
-    return fetch(`http://localhost:4000/store/playlists?search=${searchCriteria}`, {
+export const getPlaylists = (criteria) => {
+    const params = new URLSearchParams();
+    if (criteria) {
+        if (criteria.playlistName) params.append('playlistName', criteria.playlistName);
+        if (criteria.userName) params.append('userName', criteria.userName);
+        if (criteria.songTitle) params.append('songTitle', criteria.songTitle);
+        if (criteria.songArtist) params.append('songArtist', criteria.songArtist); 
+        if (criteria.songYear) params.append('songYear', criteria.songYear);       
+    }
+
+    return fetch(`http://localhost:4000/store/playlists?${params.toString()}`, {
         method: 'GET',
         credentials: 'include',
+    });
+}
+
+export const addSongToPlaylist = (playlistId, songId) => {
+    return fetch(`http://localhost:4000/store/playlist/${playlistId}/song`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ playlistId, songId })
     });
 }
 
@@ -115,6 +131,7 @@ const apis = {
     getPlaylistById,
     updatePlaylistById,
     getPlaylists,
+    addSongToPlaylist,
     createSong,
     updateSong,
     deleteSong,

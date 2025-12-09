@@ -53,7 +53,7 @@ class MongoDatabaseManager extends DatabaseManager {
     async updateSong(songId, songData) {
         return await Song.findByIdAndUpdate(songId, songData, { new: true });
     }
-    
+
     async getSongs(searchCriteria, sortCriteria, userEmail) {
         let filter = {};
         if (!searchCriteria.title && !searchCriteria.artist && !searchCriteria.year && userEmail) {
@@ -108,7 +108,6 @@ class MongoDatabaseManager extends DatabaseManager {
         }
         return deletedSong;
     }
-    
 
     async createPlaylist(playlistData, user) {
         const playlist = new Playlist(playlistData);
@@ -134,30 +133,38 @@ class MongoDatabaseManager extends DatabaseManager {
     }
 
     async getPlaylists(searchCriteria, userEmail) {
-        let filter = { published: true };
+        const { playlistName, userName, songTitle, songArtist, songYear } = searchCriteria;
+        const hasSearch = playlistName || userName || songTitle || songArtist || songYear;
 
-        if (userEmail) {
-            filter = { ownerEmail: userEmail };
+        if (!hasSearch && !userEmail) {
+            return await Playlist.find({ published: true }).populate('songs');
         }
-        else if (searchCriteria) {
-            const regex = new RegExp(searchCriteria, 'i');
-            const matchingSongs = await Song.find({
-                $or: [
-                    { title: { $regex: regex } },
-                    { artist: { $regex: regex } }
-                ]
-            }, '_id');
+        if (!hasSearch && userEmail) {
+            return await Playlist.find({ ownerEmail: userEmail }).populate('songs');
+        }
+
+        const conditions = [{ published: true }];
+        if (playlistName) {
+            conditions.push({ name: { $regex: new RegExp(playlistName, 'i') } });
+        }
+        if (userName) {
+            conditions.push({ ownerName: { $regex: new RegExp(userName, 'i') } });
+        }
+
+        const songFilter = {};
+        if (songTitle) songFilter.title = { $regex: new RegExp(songTitle, 'i') };
+        if (songArtist) songFilter.artist = { $regex: new RegExp(songArtist, 'i') };
+        if (songYear && !isNaN(parseInt(songYear))) songFilter.year = parseInt(songYear);
+
+        if (Object.keys(songFilter).length > 0) {
+            const matchingSongs = await Song.find(songFilter, '_id');
             const songIds = matchingSongs.map(song => song._id);
-
-            filter = {
-                published: true,
-                $or: [
-                    { name: { $regex: regex } },
-                    { ownerName: { $regex: regex } },
-                    { songs: { $in: songIds } }
-                ]
-            };
+            if (songIds.length === 0) {
+                return [];
+            }
+            conditions.push({ songs: { $in: songIds } });
         }
+        const filter = conditions.length > 1 ? { $and: conditions } : conditions[0];
 
         return await Playlist.find(filter).populate('songs');
     }

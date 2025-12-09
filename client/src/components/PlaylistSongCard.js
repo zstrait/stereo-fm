@@ -1,75 +1,64 @@
-import { useContext } from 'react'
-import { GlobalStoreContext } from '../store'
-import Button from '@mui/material/Button';
+import { useContext } from 'react';
+import { GlobalStoreContext } from '../store';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-function PlaylistSongCard(props) {
+export default function PlaylistSongCard({ song, index }) {
     const { store } = useContext(GlobalStoreContext);
-    const { song, index } = props;
 
-    function handleDragStart(event) {
+    const handleDragStart = (event) => {
         event.dataTransfer.setData("song", index);
-    }
+    };
 
-    function handleDragOver(event) {
+    const handleDragOver = (event) => {
         event.preventDefault();
-    }
+    };
 
-    function handleDragEnter(event) {
-        event.preventDefault();
-    }
-
-    function handleDragLeave(event) {
-        event.preventDefault();
-    }
-
-    function handleDrop(event) {
+    const handleDrop = (event) => {
         event.preventDefault();
         let targetIndex = index;
         let sourceIndex = Number(event.dataTransfer.getData("song"));
-
-        // UPDATE THE LIST
         store.addMoveSongTransaction(sourceIndex, targetIndex);
-    }
-    function handleRemoveSong(event) {
-        store.addRemoveSongTransaction(song, index);
-    }
-    function handleClick(event) {
-        // DOUBLE CLICK IS FOR SONG EDITING
-        if (event.detail === 2) {
-            console.log("double clicked");
-            store.showEditSongModal(index, song);
-        }
-    }
+    };
 
-    let cardClass = "list-card unselected-list-card";
+    const handleRemoveSong = (event) => {
+        event.stopPropagation();
+        store.removeSong(index);
+    };
+
     return (
-        <div
+        <Box
             key={index}
-            id={'song-' + index + '-card'}
-            className={cardClass}
+            draggable="true"
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            draggable="true"
-            onClick={handleClick}
+            sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                border: '1px solid black',
+                bgcolor: '#fff9c4',
+                mb: 1,
+                borderRadius: 2,
+                p: 1.5,
+                width: '98%',
+                mx: 'auto'
+            }}
         >
-            {index + 1}.
-            <a
-                id={'song-' + index + '-link'}
-                className="song-link"
-                href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
-                {song.title} ({song.year}) by {song.artist}
-            </a>
-            <Button
-                sx={{transform:"translate(-5%, -5%)", width:"5px", height:"30px"}}
-                variant="contained"
-                id={"remove-song-" + index}
-                className="list-card-button"
-                onClick={handleRemoveSong}>{"\u2715"}</Button>
-        </div>
+            <Typography variant="h6" sx={{ width: '40px' }}>{index + 1}.</Typography>
+
+            <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" fontWeight="bold">{song.title} by {song.artist} ({song.year})</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton><ContentCopyIcon sx={{ fontSize: 30 }} /></IconButton>
+                <IconButton onClick={handleRemoveSong}><CloseIcon sx={{ fontSize: 30 }} /></IconButton>
+            </Box>
+        </Box>
     );
 }
-
-export default PlaylistSongCard;

@@ -38,6 +38,7 @@ createPlaylist = async (req, res) => {
             name: newName,
             ownerEmail: user.email,
             ownerName: user.userName,
+            ownerAvatar: user.avatar,
             songs: [],
             published: false,
             listenerIds: []
@@ -118,19 +119,20 @@ getPlaylistPairs = async (req, res) => {
 }
 
 getPlaylists = async (req, res) => {
-    if (auth.verifyUser(req) === null) {
-        return res.status(401).json({ errorMessage: 'UNAUTHORIZED' })
-    }
     try {
-        if (req.query.search) {
-            const playlists = await db.getPlaylists(req.query.search, null);
-            return res.status(200).json({ success: true, data: playlists });
-        } else {
-            const user = await db.getUserById(req.userId);
-            const playlists = await db.getPlaylists(null, user.email);
-            return res.status(200).json({ success: true, data: playlists });
-        }
+        const searchCriteria = {
+            playlistName: req.query.playlistName || "",
+            userName: req.query.userName || "",
+            songTitle: req.query.songTitle || "",
+            songArtist: req.query.songArtist || "",
+            songYear: req.query.songYear || ""
+        };
+        const user = req.userId ? await db.getUserById(req.userId) : null;
+
+        const playlists = await db.getPlaylists(searchCriteria, user ? user.email : null);
+        return res.status(200).json({ success: true, data: playlists });
     } catch (err) {
+        console.error(err);
         return res.status(500).send();
     }
 }
@@ -241,10 +243,10 @@ getSongs = async (req, res) => {
             year: req.query.year || ""
         };
         const sortCriteria = req.query.sort || "";
-    
+
         const userId = auth.verifyUser(req);
         const user = userId ? await db.getUserById(userId) : null;
-        
+
         const result = await db.getSongs(searchCriteria, sortCriteria, user ? user.email : null);
 
         return res.status(200).json({

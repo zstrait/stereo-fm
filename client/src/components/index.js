@@ -1,18 +1,16 @@
 import AppBanner from './AppBanner'
 import EditToolbar from './EditToolbar'
-import HomeScreen from './HomeScreen'
-import HomeWrapper from './HomeWrapper'
-import ListCard from './PlaylistCard'
+import PlaylistCard from './PlaylistCard'
 import LoginScreen from './LoginScreen'
-import MUIDeleteModal from './MUIDeleteModal'
-import MUIEditSongModal from './MUIEditSongModal'
+import DeletePlaylistModal from './DeletePlaylistModal'
+import EditSongModal from './EditSongModal'
+import AddSongModal from './AddSongModal'
+import RemoveSongModal from './RemoveSongModal'
 import MUIErrorModal from './MUIErrorModal'
-//import MUIRemoveSongModal from './MUIRemoveSongModal'
 import RegisterScreen from './RegisterScreen'
 import SongCard from './SongCard'
 import SplashScreen from './SplashScreen'
 import Statusbar from './Statusbar'
-import WorkspaceScreen from './WorkspaceScreen'
 import EditAccountScreen from './EditAccountScreen'
 import PlaylistsScreen from './PlaylistsScreen'
 import SongCatalogScreen from './SongCatalogScreen'
@@ -27,19 +25,17 @@ import WelcomeScreen from './WelcomeScreen'
 export {
     AppBanner,
     EditToolbar,
-    HomeScreen,
-    HomeWrapper,
-    ListCard,
+    PlaylistCard,
     LoginScreen,
-    MUIDeleteModal,
-    MUIEditSongModal,
+    DeletePlaylistModal,
+    EditSongModal,
+    AddSongModal,
+    RemoveSongModal,
     MUIErrorModal,
-    //MUIRemoveSongModal,
     SongCard,
     RegisterScreen,
     SplashScreen,
     Statusbar,
-    WorkspaceScreen,
     EditAccountScreen,
     PlaylistsScreen,
     SongCatalogScreen,

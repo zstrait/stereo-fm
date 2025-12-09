@@ -16,15 +16,16 @@ async function seedDB() {
         await mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true });
         console.log('Connected to MongoDB for Seeding...');
 
-        // clear db
+        // clear db 
         await User.deleteMany({});
         await Song.deleteMany({});
         await Playlist.deleteMany({});
         console.log('Database Cleared.');
 
-        // create users
+        // create users 
         const salt = await bcrypt.genSalt(10);
         const avatarsDir = path.join(__dirname, 'avatars');
+        const userMap = new Map();
 
         for (let i = 0; i < usersData.length; i++) {
             const userData = usersData[i];
@@ -52,14 +53,43 @@ async function seedDB() {
                 avatar: avatarBase64
             });
 
-            await user.save();
+            const savedUser = await user.save();
+            userMap.set(savedUser.email, savedUser);
         }
-        console.log(`Created ${usersData.length} Users with custom avatars.`);
+        console.log(`Created ${usersData.length} Users.`);
 
-        // create songs
-        await Song.insertMany(songsData);
+        // create songs (Your code, with one addition)
+        const catalogSongs = await Song.insertMany(songsData);
         console.log(`Inserted ${songsData.length} Songs into the Catalog.`);
 
+        // create playlists
+        for (const user of userMap.values()) {
+            const numPlaylists = Math.floor(Math.random() * 3) + 2;
+
+            for (let i = 1; i <= numPlaylists; i++) {
+                const numSongsInPlaylist = Math.floor(Math.random() * 121) + 10;
+                const randomSongs = catalogSongs.sort(() => 0.5 - Math.random()).slice(0, numSongsInPlaylist);
+                const songIds = randomSongs.map(s => s._id);
+
+                const playlist = new Playlist({
+                    name: `${user.userName}'s Mix #${i}`,
+                    ownerEmail: user.email,
+                    ownerName: user.userName,
+                    ownerAvatar: user.avatar,
+                    songs: songIds,
+                    listenerIds: [],
+                    published: true,
+                });
+                const savedPlaylist = await playlist.save();
+
+                user.playlists.push(savedPlaylist._id);
+
+                await Song.updateMany({ _id: { $in: songIds } }, { $inc: { playlists: 1 } });
+            }
+            await user.save();
+        }
+
+        console.log(`Finished creating playlists.`);
         console.log("Database Seeding Complete!");
         process.exit();
 

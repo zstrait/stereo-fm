@@ -34,7 +34,6 @@ const App = () => {
                         <Route path="/playlists/" exact component={PlaylistsScreen} />
                         <Route path="/account/edit/" exact component={EditAccountScreen} />
                     </Switch>
-                    <Statusbar />
                 </GlobalStoreContextProvider>
             </AuthContextProvider>
         </BrowserRouter>
