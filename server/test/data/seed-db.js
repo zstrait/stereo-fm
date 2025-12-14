@@ -58,7 +58,7 @@ async function seedDB() {
         }
         console.log(`Created ${usersData.length} Users.`);
 
-        // create songs (Your code, with one addition)
+        // create songs 
         const catalogSongs = await Song.insertMany(songsData);
         console.log(`Inserted ${songsData.length} Songs into the Catalog.`);
 

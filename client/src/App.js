@@ -8,7 +8,6 @@ import {
     // HomeWrapper,
     LoginScreen,
     RegisterScreen,
-    Statusbar,
     EditAccountScreen,
     PlaylistsScreen,
     SongCatalogScreen,

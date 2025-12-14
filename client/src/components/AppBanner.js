@@ -88,8 +88,8 @@ export default function AppBanner() {
     }
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+        <Box sx={{ flexGrow: 1 }} >
+            <AppBar position="static" style={{ borderTopRightRadius: 12 , borderTopLeftRadius: 12, backgroundColor: "#4F4557" }}>
                 <Toolbar>
                     <Typography
                         variant="h4"
@@ -102,10 +102,10 @@ export default function AppBanner() {
 
                     <Box sx={{ display: 'flex', gap: 2, ml: 2 }}>
                         <Link to='/playlists/' style={{ textDecoration: 'none' }}>
-                            <Button variant="contained" sx={{ bgcolor: 'secondary.main', color: 'white', borderRadius: "16px", textTransform: 'none' }}>Playlists</Button>
+                            <Button variant="contained" sx={{ bgcolor: '#6D5D6E', color: '#F4EEE0', borderRadius: "12px", textTransform: 'none' }}>Playlists</Button>
                         </Link>
                         <Link to='/songs/' style={{ textDecoration: 'none' }}>
-                            <Button variant="contained" sx={{ bgcolor: 'secondary.main', color: 'white', borderRadius: "16px", textTransform: 'none' }}>Song Catalog</Button>
+                            <Button variant="contained" sx={{ bgcolor: '#6D5D6E', color: '#F4EEE0', borderRadius: "12px", textTransform: 'none' }}>Song Catalog</Button>
                         </Link>
                     </Box>
 

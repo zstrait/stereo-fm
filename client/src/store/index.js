@@ -340,10 +340,13 @@ function GlobalStoreContextProvider(props) {
             const response = await storeRequestSender.addSongToPlaylist(playlistId, songId);
             if (response.status === 200) {
                 console.log("Song added to playlist");
+                store.loadSongs();
             }
         }
         asyncAddSong();
     }
+
+
 
     // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
     // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE

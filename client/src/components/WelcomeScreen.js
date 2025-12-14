@@ -4,7 +4,7 @@ export default function WelcomeScreen() {
     return (
         <>
             <div className="welcome-container">
-                <span className="welcome-title">Playlister</span>
+                <span className="welcome-title">StereoFM</span>
                 <div className="welcome-logo"></div>
                 <div className="welcome-buttons-container">
                     <Link to="/songs" className="welcome-button">Continue as Guest</Link>

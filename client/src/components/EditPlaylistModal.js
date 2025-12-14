@@ -19,12 +19,13 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 1000,
     height: 600,
-    bgcolor: '#90EE90',
+    bgcolor: '#A7C1A8',
     border: '2px solid #000',
     boxShadow: 24,
     p: 2,
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    borderRadius: 4
 };
 
 export default function EditPlaylistModal() {
@@ -84,7 +85,7 @@ export default function EditPlaylistModal() {
                     />
                 </Box>
 
-                <List sx={{ flexGrow: 1, overflowY: 'auto', bgcolor: 'white', borderRadius: 1, mb: 2, p: 1 }}>
+                <List sx={{ flexGrow: 1, overflowY: 'auto', bgcolor: '#A7C1A8', borderRadius: 1, mb: 2, p: 1 }}>
                     {store.currentList?.songs.map((song, index) => (
                         <PlaylistSongCard 
                             key={index} 

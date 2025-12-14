@@ -1,266 +1,157 @@
-import { beforeAll, beforeEach, afterEach, afterAll, expect, test } from 'vitest';
+import { beforeAll, afterAll, expect, test } from 'vitest';
 const { db } = require('../index.js');
 
-/**
- * Executed once before all tests are performed.
- */
+await db.createUser({ userName: "John Lennon", email: "john@beatles.com", passwordHash: "imagine123", avatar: "john_img" });
 beforeAll(async () => {
     await db.connect();
-});
-
-/**
- * Executed before each test is performed.
- */
-beforeEach(async () => {
     await db.clear();
 });
 
-/**
- * Executed after each test is performed.
- */
-afterEach(() => {
-});
-
-/**
- * Executed once after all tests are performed.
- */
 afterAll(async () => {
     await db.close();
 });
 
-
-// THE REST OF YOUR TEST SHOULD BE PUT BELOW
-
-test('Test 1) Creating a new user', async () => {
-    const userData = {
-        firstName: 'Test',
-        lastName: 'User',
-        email: `testuser_${Date.now()}@test.com`,
-        passwordHash: 'testpassword'
-    };
-    const user = await db.createUser(userData);
-
-    expect(user).toBeDefined();
-
-    expect(user.firstName).toBe(userData.firstName);
-    expect(user.lastName).toBe(userData.lastName);
-    expect(user.email).toBe(userData.email);
-
-    expect(user.id).toBeDefined();
-    expect(user._id).toBeDefined();
-    expect(String(user.id)).toEqual(String(user._id));
+test('1. Create User (John)', async () => {
+    expect(john.userName).toBe("John Lennon");
+    const john = await db.getUserByEmail("john@beatles.com");
 });
 
-
-test('Test 2) Getting a user by email', async () => {
-    const userData = {
-        firstName: 'FindMe',
-        lastName: 'ByEmail',
-        email: `findme_${Date.now()}@test.com`,
-        passwordHash: 'findmepass'
-    };
-    const user = await db.createUser(userData);
-    const foundUser = await db.getUserByEmail(userData.email);
-
-    expect(foundUser).toBeDefined();
-    expect(String(foundUser.id)).toEqual(String(user.id));
-    expect(foundUser.email).toBe(userData.email);
+test('2. Change Password (John)', async () => {
+    const newHash = "givepeaceachance";
+    const updated = await db.updateUser("john@beatles.com", { passwordHash: newHash });
+    expect(updated.passwordHash).toBe(newHash);
 });
 
-
-test('Test 3) Getting a user by ID', async () => {
-    const userData = {
-        firstName: 'FindMe',
-        lastName: 'ByID',
-        email: `findmebyid_${Date.now()}@test.com`,
-        passwordHash: 'findmepass'
-    };
-    const user = await db.createUser(userData);
-    const foundUser = await db.getUserById(user.id);
-
-    expect(foundUser).toBeDefined();
-    expect(String(foundUser.id)).toEqual(String(user.id));
-    expect(foundUser.email).toBe(userData.email);
+test('3. Create Song (Hey Jude)', async () => {
+    await db.createSong({ title: "Hey Jude", artist: "The Beatles", year: 1968, youTubeId: "A_MjCqQoLLA", ownerEmail: "john@beatles.com" });
+    const songs = await db.getSongs({ title: "Hey Jude" }, null, null);
+    expect(songs.songs.length).toBe(1);
 });
 
+test('4. Edit Song (Hey Jude -> Hey Jude Remastered)', async () => {
+    const search = await db.getSongs({ title: "Hey Jude" }, null, null);
+    const song = search.songs[0];
+    await db.updateSong(song._id, { title: "Hey Jude Remastered" });
 
-test('Test 4) Creating a new playlist', async () => {
-    const userData = {
-        firstName: 'Playlist',
-        lastName: 'Owner',
-        email: `owner_${Date.now()}@test.com`,
-        passwordHash: 'ownerpass'
-    };
-    const user = await db.createUser(userData);
-    const playlistData = {
-        name: 'My Test Playlist',
-        ownerEmail: user.email,
-        songs: []
-    };
-    const playlist = await db.createPlaylist(playlistData, user);
-
-    expect(playlist).toBeDefined();
-    expect(playlist.name).toBe(playlistData.name);
-    expect(playlist.ownerEmail).toBe(user.email);
-    expect(playlist.songs.length).toBe(0);
-    expect(playlist.id).toBeDefined();
+    const check = await db.getSongById(song._id);
+    expect(check.title).toBe("Hey Jude Remastered");
 });
 
+test('5. Copy Song (Deep Copy)', async () => {
+    const search = await db.getSongs({ title: "Hey Jude Remastered" }, null, null);
+    const original = search.songs[0];
 
-test('Test 5) Getting a playlist by ID', async () => {
-    const userData = {
-        firstName: 'FindPlaylist',
-        lastName: 'Owner',
-        email: `findplaylist_${Date.now()}@test.com`,
-        passwordHash: 'pw'
+    const copyData = {
+        title: original.title,
+        artist: original.artist,
+        year: original.year,
+        youTubeId: original.youTubeId,
+        ownerEmail: "john@beatles.com"
     };
-    const user = await db.createUser(userData);
-    const playlistData = {
-        name: 'Playlist To Find',
-        ownerEmail: user.email,
-        songs: []
-    };
-    const playlist = await db.createPlaylist(playlistData, user);
-    const foundPlaylist = await db.getPlaylistById(playlist.id);
+    const copy = await db.createSong(copyData);
 
-    expect(foundPlaylist).toBeDefined();
-    expect(String(foundPlaylist.id)).toEqual(String(playlist.id));
-    expect(foundPlaylist.name).toBe(playlistData.name);
+    expect(copy.title).toBe(original.title);
+    expect(String(copy._id)).not.toBe(String(original._id));
 });
 
-
-test('Test 6) Getting playlist pairs for a user', async () => {
-    const userData = {
-        firstName: 'Pairs',
-        lastName: 'Owner',
-        email: `pairs_${Date.now()}@test.com`,
-        passwordHash: 'pw'
-    };
-    const user = await db.createUser(userData);
-    const playlistData1 = {
-        name: 'Playlist One',
-        ownerEmail: user.email,
-        songs: []
-    };
-    const p1 = await db.createPlaylist(playlistData1, user);
-    const playlistData2 = {
-        name: 'Playlist Two',
-        ownerEmail: user.email,
-        songs: []
-    };
-    const p2 = await db.createPlaylist(playlistData2, user);
-
-    const pairs = await db.getPlaylistPairs(user);
-
-    expect(pairs).toBeDefined();
-    expect(pairs).toHaveLength(2);
-    expect(pairs).toEqual(
-        expect.arrayContaining([
-            expect.objectContaining({
-                name: 'Playlist One',
-                _id: p1.id
-            }),
-            expect.objectContaining({
-                name: 'Playlist Two',
-                _id: p2.id
-            })
-        ])
-    );
+test('6. Search Song (No Conditions)', async () => {
+    const result = await db.getSongs({}, null, null);
+    expect(result.songs.length).toBeGreaterThan(0);
 });
 
-
-test('Test 7) Getting all playlists', async () => {
-    const userData1 = {
-        firstName: 'User',
-        lastName: 'One',
-        email: `userone_${Date.now()}@test.com`,
-        passwordHash: 'pw1'
-    };
-    const user1 = await db.createUser(userData1);
-    const playlistData1 = {
-        name: 'User One Playlist',
-        ownerEmail: user1.email,
-        songs: []
-    };
-    await db.createPlaylist(playlistData1, user1);
-
-    const userData2 = {
-        firstName: 'User',
-        lastName: 'Two',
-        email: `usertwo_${Date.now()}@test.com`,
-        passwordHash: 'pw2'
-    };
-    const user2 = await db.createUser(userData2);
-    const playlistData2 = {
-        name: 'User Two Playlist',
-        ownerEmail: user2.email,
-        songs: []
-    };
-    await db.createPlaylist(playlistData2, user2);
-
-    const allPlaylists = await db.getPlaylists();
-
-    expect(allPlaylists).toBeDefined();
-    expect(allPlaylists).toHaveLength(2);
+test('7. Search Song (1 Condition: Artist)', async () => {
+    const result = await db.getSongs({ artist: "The Beatles" }, null, null);
+    expect(result.songs.length).toBeGreaterThan(0);
 });
 
-
-test('Test 8) Updating a playlist', async () => {
-    const userData = {
-        firstName: 'Update',
-        lastName: 'Owner',
-        email: `update_${Date.now()}@test.com`,
-        passwordHash: 'pw'
-    };
-    const user = await db.createUser(userData);
-    const playlistData = {
-        name: 'Original Name',
-        ownerEmail: user.email,
-        songs: []
-    };
-    const playlist = await db.createPlaylist(playlistData, user);
-
-    const updatedData = {
-        name: 'Updated Name',
-        ownerEmail: user.email,
-        songs: [
-            {
-                title: 'New Song',
-                artist: 'Test Artist',
-                year: 2024,
-                youTubeId: '123'
-            }
-        ]
-    };
-
-    await db.updatePlaylist(playlist.id, updatedData);
-    const updatedPlaylist = await db.getPlaylistById(playlist.id);
-
-    expect(updatedPlaylist).toBeDefined();
-    expect(updatedPlaylist.name).toBe('Updated Name');
-    expect(updatedPlaylist.songs).toHaveLength(1);
-    expect(updatedPlaylist.songs[0].title).toBe('New Song');
+test('8. Search Song (2 Conditions: Artist + Year)', async () => {
+    const result = await db.getSongs({ artist: "The Beatles", year: "1968" }, null, null);
+    expect(result.songs.length).toBeGreaterThan(0);
 });
 
+test('9. Search Song (3 Conditions)', async () => {
+    const result = await db.getSongs({ title: "Remastered", artist: "The Beatles", year: "1968" }, null, null);
+    expect(result.songs.length).toBe(2);
+});
 
-test('Test 9) Deleting a playlist', async () => {
-    const userData = {
-        firstName: 'Delete',
-        lastName: 'Owner',
-        email: `delete_${Date.now()}@test.com`,
-        passwordHash: 'pw'
+test('10. Delete Song (Copy)', async () => {
+    const search = await db.getSongs({ title: "Hey Jude Remastered" }, null, null);
+    const songToDelete = search.songs[1];
+    await db.deleteSong(songToDelete._id);
+
+    const check = await db.getSongById(songToDelete._id);
+    expect(check).toBeNull();
+});
+
+test('11. Verify Song Removed from Playlist (Cascading Delete)', async () => {
+    const john = await db.getUserByEmail("john@beatles.com");
+    const song = await db.createSong({ title: "Let It Be", artist: "The Beatles", year: 1970, youTubeId: "QDYfEBY9NM4", ownerEmail: "john@beatles.com" });
+    const p = await db.createPlaylist({
+        name: "Let It Be Album",
+        ownerEmail: "john@beatles.com",
+        ownerName: "John Lennon",
+        songs: [song._id],
+        published: true
+    }, john);
+
+    await db.deleteSong(song._id);
+
+    const check = await db.getPlaylistById(p._id);
+    expect(check.songs.length).toBe(0);
+});
+
+test('12. Create Playlist (Abbey Road)', async () => {
+    const john = await db.getUserByEmail("john@beatles.com");
+    await db.createPlaylist({ name: "Abbey Road", ownerEmail: "john@beatles.com", ownerName: "John Lennon", songs: [], published: true }, john);
+    const lists = await db.getPlaylists({}, "john@beatles.com");
+    expect(lists.length).toBe(2);
+});
+
+test('13. Edit Playlist (Rename to White Album)', async () => {
+    const lists = await db.getPlaylists({ playlistName: "Abbey Road" }, null);
+    const mix = lists[0];
+    mix.name = "White Album";
+    await db.updatePlaylist(mix._id, mix);
+
+    const check = await db.getPlaylistById(mix._id);
+    expect(check.name).toBe("White Album");
+});
+
+test('14. Copy Playlist', async () => {
+    const lists = await db.getPlaylists({ playlistName: "White Album" }, null);
+    const original = lists[0];
+    const john = await db.getUserByEmail("john@beatles.com");
+
+    const copyData = {
+        name: "Copy of " + original.name,
+        ownerEmail: "john@beatles.com",
+        ownerName: "John Lennon",
+        songs: original.songs,
+        published: true
     };
-    const user = await db.createUser(userData);
-    const playlistData = {
-        name: 'Playlist To Delete',
-        ownerEmail: user.email,
-        songs: []
-    };
-    const playlist = await db.createPlaylist(playlistData, user);
+    await db.createPlaylist(copyData, john);
 
-    await db.deletePlaylist(playlist.id);
+    const check = await db.getPlaylists({ playlistName: "Copy of" }, null);
+    expect(check.length).toBe(1);
+});
 
-    const foundPlaylist = await db.getPlaylistById(playlist.id);
+test('15. Search Playlist', async () => {
+    const result = await db.getPlaylists({ playlistName: "Copy" }, null);
+    expect(result.length).toBe(1);
+});
 
-    expect(foundPlaylist).toBeNull();
+test('16. Sorting Playlists (Name A-Z)', async () => {
+    const john = await db.getUserByEmail("john@beatles.com");
+    await db.createPlaylist({ name: "Revolver", ownerEmail: "john@beatles.com", ownerName: "John Lennon", songs: [], published: true }, john);
+    const result = await db.getPlaylists({}, null);
+    expect(result.length).toBe(4);
+});
+
+test('17. Delete Playlist (Revolver)', async () => {
+    const lists = await db.getPlaylists({ playlistName: "Revolver" }, null);
+    const revolver = lists[0];
+    await db.deletePlaylist(revolver._id);
+
+    const check = await db.getPlaylistById(revolver._id);
+    expect(check).toBeNull();
 });

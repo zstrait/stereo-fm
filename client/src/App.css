@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap');
+
+
 :root {
     /* 
         FIRST WE'LL DEFINE OUR SWATCHES, i.e. THE COMPLEMENTARY
@@ -7,7 +10,7 @@
         @author McKilla Gorilla
     */
     --swatch-foundation: #eeeedd;
-    --swatch-primary: #e6e6e6;
+    --swatch-primary: #F4EEE0;
     --swatch-complement: #e1e4cb;
     --swatch-contrast: #999999;
     --swatch-accent: #669966;
@@ -17,17 +20,21 @@
 }
 
 body {
-    background-image: url('https://thumbs.dreamstime.com/b/music-notes-symbols-seamless-pattern-design-fully-editable-fill-background-color-music-notes-symbols-seamless-pattern-118273669.jpg')
+    background-color: #393646;
+    /* background-image: url('https://thumbs.dreamstime.com/b/music-notes-symbols-seamless-pattern-design-fully-editable-fill-background-color-music-notes-symbols-seamless-pattern-118273669.jpg'); */
 }
 
 #root {
     background-color: var(--swatch-primary);
-    font-family: "Lexend Exa";
+    font-family: "Sometype Mono", monospace;
     position: absolute;
     width: 80%;
     left: 10%;
     height: 90%;
     top: 5%;
+    border-radius: 12px;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 16px;
 }
 
 #app-root {
@@ -45,7 +52,7 @@ body {
     width: 100%;
     height: 10%;
     float: left;
-    background-image: linear-gradient(to bottom, #b8b808, #636723);
+    /* background-image: linear-gradient(to bottom, #b8b808, #636723); */
     color: white;
     font-size: 48pt;
     border-color: black;
@@ -83,11 +90,13 @@ body {
     align-items: center;
     justify-content: center;
     gap: 48px;
+    color: #393646;
 }
 
 .welcome-title {
-    font-size: 64px;
-    font-weight: 500;
+    font-size: 72px;
+    font-weight: 600;
+    margin-bottom: -12px;
 }
 
 .welcome-logo {
@@ -97,7 +106,7 @@ body {
     background-position: center;
     width: 300px;
     height: 300px;
-    opacity: .9;
+    opacity: .85;
 }
 
 .welcome-buttons-container {
@@ -108,19 +117,17 @@ body {
 .welcome-button {
     width: 210px;
     height: 45px;
-    color: white;
-    background-color: black;
+    color: #F4EEE0;
+    background-color: #4F4557;
     border: none;
     border-radius: 8px;
     font-size: 18px;
-    /* Additions for Link compatibility */
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
     cursor: pointer;
 }
-
 
 .playlister-button,
 .playlister-button-disabled {

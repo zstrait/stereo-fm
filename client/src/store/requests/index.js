@@ -49,7 +49,7 @@ export const updatePlaylistById = (id, playlist) => {
         })
     });
 }
-export const getPlaylists = (criteria) => {
+export const getPlaylists = (criteria, sort) => {
     const params = new URLSearchParams();
     if (criteria) {
         if (criteria.playlistName) params.append('playlistName', criteria.playlistName);
@@ -58,6 +58,7 @@ export const getPlaylists = (criteria) => {
         if (criteria.songArtist) params.append('songArtist', criteria.songArtist); 
         if (criteria.songYear) params.append('songYear', criteria.songYear);       
     }
+    if (sort) params.append('sort', sort);
 
     return fetch(`http://localhost:4000/store/playlists?${params.toString()}`, {
         method: 'GET',

@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { GlobalStoreContext } from '../store';
 import AuthContext from '../auth';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';

@@ -132,41 +132,55 @@ class MongoDatabaseManager extends DatabaseManager {
         }));
     }
 
-    async getPlaylists(searchCriteria, userEmail) {
+    async getPlaylists(searchCriteria, userEmail, sortCriteria) {
         const { playlistName, userName, songTitle, songArtist, songYear } = searchCriteria;
         const hasSearch = playlistName || userName || songTitle || songArtist || songYear;
 
+        let sort = { name: 1 };
+        if (sortCriteria === 'Playlist Name (Z-A)') sort = { name: -1 };
+        else if (sortCriteria === 'User Name (A-Z)') sort = { ownerName: 1 };
+        else if (sortCriteria === 'User Name (Z-A)') sort = { ownerName: -1 };
+
+        let playlists;
         if (!hasSearch && !userEmail) {
-            return await Playlist.find({ published: true }).populate('songs');
+            playlists = await Playlist.find({ published: true }).populate('songs').sort(sort);
         }
-        if (!hasSearch && userEmail) {
-            return await Playlist.find({ ownerEmail: userEmail }).populate('songs');
+        else if (!hasSearch && userEmail) {
+            playlists = await Playlist.find({ ownerEmail: userEmail }).populate('songs').sort(sort);
         }
-
-        const conditions = [{ published: true }];
-        if (playlistName) {
-            conditions.push({ name: { $regex: new RegExp(playlistName, 'i') } });
-        }
-        if (userName) {
-            conditions.push({ ownerName: { $regex: new RegExp(userName, 'i') } });
-        }
-
-        const songFilter = {};
-        if (songTitle) songFilter.title = { $regex: new RegExp(songTitle, 'i') };
-        if (songArtist) songFilter.artist = { $regex: new RegExp(songArtist, 'i') };
-        if (songYear && !isNaN(parseInt(songYear))) songFilter.year = parseInt(songYear);
-
-        if (Object.keys(songFilter).length > 0) {
-            const matchingSongs = await Song.find(songFilter, '_id');
-            const songIds = matchingSongs.map(song => song._id);
-            if (songIds.length === 0) {
-                return [];
+        else {
+            const conditions = [{ published: true }];
+            if (playlistName) {
+                conditions.push({ name: { $regex: new RegExp(playlistName, 'i') } });
             }
-            conditions.push({ songs: { $in: songIds } });
-        }
-        const filter = conditions.length > 1 ? { $and: conditions } : conditions[0];
+            if (userName) {
+                conditions.push({ ownerName: { $regex: new RegExp(userName, 'i') } });
+            }
 
-        return await Playlist.find(filter).populate('songs');
+            const songFilter = {};
+            if (songTitle) songFilter.title = { $regex: new RegExp(songTitle, 'i') };
+            if (songArtist) songFilter.artist = { $regex: new RegExp(songArtist, 'i') };
+            if (songYear && !isNaN(parseInt(songYear))) songFilter.year = parseInt(songYear);
+
+            if (Object.keys(songFilter).length > 0) {
+                const matchingSongs = await Song.find(songFilter, '_id');
+                const songIds = matchingSongs.map(song => song._id);
+                if (songIds.length === 0) {
+                    return [];
+                }
+                conditions.push({ songs: { $in: songIds } });
+            }
+            const filter = conditions.length > 1 ? { $and: conditions } : conditions[0];
+            playlists = await Playlist.find(filter).populate('songs').sort(sort);
+        }
+
+        if (sortCriteria === 'Listeners (High-Low)') {
+            playlists.sort((a, b) => b.listenerIds.length - a.listenerIds.length);
+        } else if (sortCriteria === 'Listeners (Low-High)') {
+            playlists.sort((a, b) => a.listenerIds.length - b.listenerIds.length);
+        }
+
+        return playlists;
     }
 
     async updatePlaylist(playlistId, playlistData) {
@@ -177,6 +191,14 @@ class MongoDatabaseManager extends DatabaseManager {
         return await Song.findByIdAndUpdate(
             songId,
             { $inc: { listens: 1 } },
+            { new: true }
+        );
+    }
+
+    async incrementSongPlaylistCount(songId) {
+        return await Song.findByIdAndUpdate(
+            songId,
+            { $inc: { playlists: 1 } },
             { new: true }
         );
     }

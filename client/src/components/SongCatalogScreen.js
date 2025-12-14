@@ -20,6 +20,7 @@ export default function SongCatalogScreen() {
 
     useEffect(() => {
         store.loadSongs();
+        store.loadPlaylists();
     }, [store.searchCriteria, store.sortCriteria]);
 
     useEffect(() => {

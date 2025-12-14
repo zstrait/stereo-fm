@@ -120,16 +120,10 @@ getPlaylistPairs = async (req, res) => {
 
 getPlaylists = async (req, res) => {
     try {
-        const searchCriteria = {
-            playlistName: req.query.playlistName || "",
-            userName: req.query.userName || "",
-            songTitle: req.query.songTitle || "",
-            songArtist: req.query.songArtist || "",
-            songYear: req.query.songYear || ""
-        };
-        const user = req.userId ? await db.getUserById(req.userId) : null;
-
-        const playlists = await db.getPlaylists(searchCriteria, user ? user.email : null);
+        const { sort, ...searchCriteria } = req.query;
+        const userId = auth.verifyUser(req);
+        const user = userId ? await db.getUserById(userId) : null;
+        const playlists = await db.getPlaylists(searchCriteria, user ? user.email : null, sort);
         return res.status(200).json({ success: true, data: playlists });
     } catch (err) {
         console.error(err);
@@ -309,8 +303,13 @@ addSongToPlaylist = async (req, res) => {
             return res.status(401).json({ errorMessage: 'You do not own this playlist' });
         }
 
+        if (playlist.songs.find(s => s._id.toString() === songId)) {
+            return res.status(400).json({ errorMessage: 'Song is already in this playlist.' });
+        }
+
         playlist.songs.push(songId);
         await db.updatePlaylist(playlistId, playlist);
+        await db.incrementSongPlaylistCount(songId);
 
         return res.status(200).json({
             success: true,

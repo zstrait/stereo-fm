@@ -21,11 +21,12 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 900,
     height: 600,
-    bgcolor: '#90EE90',
+    bgcolor: '#A7C1A8',
     border: '2px solid #000',
     boxShadow: 24,
     p: 2,
     display: 'flex',
+    borderRadius: 4
 };
 
 export default function PlayPlaylistModal() {
@@ -98,7 +99,7 @@ export default function PlayPlaylistModal() {
         >
             <Box sx={style}>
                 <Box sx={{ width: '50%', mr: 2, display: 'flex', flexDirection: 'column' }}>
-                    <Box sx={{ bgcolor: 'white', p: 2, mb: 2, borderRadius: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ bgcolor: '#EEEFE0', p: 2, mb: 2, borderRadius: 1, display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar src={store.currentList?.ownerAvatar} alt={store.currentList?.ownerName} />
                         <Box>
                             <Typography variant="h6" fontWeight="bold">{store.currentList?.name}</Typography>
@@ -106,17 +107,16 @@ export default function PlayPlaylistModal() {
                         </Box>
                     </Box>
 
-                    <List sx={{ overflowY: 'auto', flexGrow: 1, bgcolor: 'white', borderRadius: 1 }}>
+                    <List sx={{ overflowY: 'auto', flexGrow: 1, bgcolor: '#EEEFE0', borderRadius: 1 }}>
                         {store.currentList?.songs.map((song, index) => (
                             <ListItem
                                 key={song._id}
-                                button
                                 onClick={() => handleSongClick(index)}
                                 sx={{
                                     bgcolor: index === currentIndex ? '#ffc107' : 'transparent',
                                     mb: 1,
                                     borderRadius: 1,
-                                    border: '1px solid #ccc',
+                                    border: '1px solid #A7C1A8',
                                     mx: 1,
                                     width: 'auto'
                                 }}
@@ -130,7 +130,7 @@ export default function PlayPlaylistModal() {
                 </Box>
 
                 <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Box sx={{ width: '100%', mb: 2 }}>
+                    <Box sx={{ width: '100%', mb: 2, marginTop: 10 }}>
                         <YouTube
                             videoId={currentSong?.youTubeId}
                             opts={opts}
@@ -138,7 +138,7 @@ export default function PlayPlaylistModal() {
                             onStateChange={(e) => {
                                 if (e.data === 1) setIsPlaying(true);
                                 if (e.data === 2) setIsPlaying(false);
-                                if (e.data === 0) handleNext(); 
+                                if (e.data === 0) handleNext();
                             }}
                         />
                     </Box>
@@ -147,7 +147,7 @@ export default function PlayPlaylistModal() {
                         <Typography variant="h6" fontWeight="bold">{currentSong?.title}</Typography>
                         <Typography variant="subtitle1">{currentSong?.artist}</Typography>
 
-                        <Box sx={{ display: 'flex', gap: 2, mt: 2, border: '1px solid black', p: 1, borderRadius: 1, bgcolor: 'white' }}>
+                        <Box sx={{ display: 'flex', gap: 2, mt: 2, border: '1px solid black', p: 1, borderRadius: 1, bgcolor: '#EEEFE0' }}>
                             <IconButton onClick={handlePrev}>
                                 <SkipPreviousIcon />
                             </IconButton>
