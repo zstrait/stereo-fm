@@ -12,7 +12,7 @@ class MongoDatabaseManager extends DatabaseManager {
 
     async connect() {
         try {
-            await mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true });
+            await mongoose.connect(process.env.DB_CONNECT);
             console.log('MongoDB connection successful');
         } catch (e) {
             console.error('MongoDB connection error:', e.message);

@@ -2,25 +2,12 @@ import { createContext, useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { jsTPS } from "jstps"
 import storeRequestSender from './requests'
-import CreateSong_Transaction from '../transactions/CreateSong_Transaction'
 import MoveSong_Transaction from '../transactions/MoveSong_Transaction'
 import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction'
-import UpdateSong_Transaction from '../transactions/UpdateSong_Transaction'
 import AuthContext from '../auth'
 
-/*
-    This is our global data store. Note that it uses the Flux design pattern,
-    which makes use of things like actions and reducers. 
-    
-    @author McKilla Gorilla
-*/
-
-// THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
-console.log("create GlobalStoreContext");
 
-// THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
-// DATA STORE STATE THAT CAN BE PROCESSED
 export const GlobalStoreActionType = {
     CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
@@ -28,7 +15,6 @@ export const GlobalStoreActionType = {
     LOAD_PLAYLISTS: "LOAD_PLAYLISTS",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
-    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
     HIDE_MODALS: "HIDE_MODALS",
@@ -38,7 +24,6 @@ export const GlobalStoreActionType = {
     MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION"
 }
 
-// WE'LL NEED THIS TO PROCESS TRANSACTIONS
 const tps = new jsTPS();
 
 const CurrentModal = {
@@ -52,10 +37,7 @@ const CurrentModal = {
     EDIT_PLAYLIST: "EDIT_PLAYLIST",
 }
 
-// WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
-// AVAILABLE TO THE REST OF THE APPLICATION
 function GlobalStoreContextProvider(props) {
-    // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     const [store, setStore] = useState({
         currentModal: CurrentModal.NONE,
         playlists: [],
@@ -63,7 +45,6 @@ function GlobalStoreContextProvider(props) {
         currentSongIndex: -1,
         currentSong: null,
         newListCounter: 0,
-        listNameActive: false,
         listIdMarkedForDeletion: null,
         listMarkedForDeletion: null,
         currentView: "HOME",
@@ -74,20 +55,11 @@ function GlobalStoreContextProvider(props) {
     });
     const history = useHistory();
 
-    console.log("inside useGlobalStore");
-
-    // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
-    console.log("auth: " + auth);
 
-    // HERE'S THE DATA STORE'S REDUCER, IT MUST
-    // HANDLE EVERY TYPE OF STATE CHANGE
-    // HERE'S THE DATA STORE'S REDUCER, IT MUST
-    // HANDLE EVERY TYPE OF STATE CHANGE
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
-            // LIST UPDATE OF ITS NAME
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -101,7 +73,6 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 }));
             }
-            // STOP EDITING THE CURRENT LIST
             case GlobalStoreActionType.CLOSE_CURRENT_LIST: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -114,7 +85,6 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 }));
             }
-            // CREATE A NEW LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -128,7 +98,6 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 }));
             }
-            // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_PLAYLISTS: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -142,7 +111,6 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 }));
             }
-            // PREPARE TO DELETE A LIST
             case GlobalStoreActionType.MARK_LIST_FOR_DELETION: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -155,7 +123,6 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: payload.playlist
                 }));
             }
-            // UPDATE A LIST
             case GlobalStoreActionType.SET_CURRENT_LIST: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -168,20 +135,6 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: null
                 }));
             }
-            // START EDITING A LIST NAME
-            case GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE: {
-                return setStore(prevStore => ({
-                    ...prevStore,
-                    currentModal: CurrentModal.NONE,
-                    currentList: payload,
-                    currentSongIndex: -1,
-                    currentSong: null,
-                    listNameActive: true,
-                    listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
-                }));
-            }
-            // 
             case GlobalStoreActionType.EDIT_SONG: {
                 return setStore(prevStore => ({
                     ...prevStore,
@@ -246,27 +199,6 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.tryAcessingOtherAccountPlaylist = function () {
-        let id = "635f203d2e072037af2e6284";
-        async function asyncSetCurrentList(id) {
-            let response = await storeRequestSender.getPlaylistById(id);
-            if (response.status === 200) {
-                const responseData = await response.json();
-                let playlist = responseData.playlist;
-                storeReducer({
-                    type: GlobalStoreActionType.SET_CURRENT_LIST,
-                    payload: playlist
-                });
-            }
-        }
-        asyncSetCurrentList(id);
-        history.push("/playlist/635f203d2e072037af2e6284");
-    }
-    // THESE ARE THE FUNCTIONS THAT WILL UPDATE OUR STORE AND
-    // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
-    // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
-
-    // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         async function asyncChangeListName(id) {
             let response = await storeRequestSender.getPlaylistById(id);
@@ -300,7 +232,6 @@ function GlobalStoreContextProvider(props) {
         asyncChangeListName(id);
     }
 
-    // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
         storeReducer({
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
@@ -346,12 +277,6 @@ function GlobalStoreContextProvider(props) {
         asyncAddSong();
     }
 
-
-
-    // THE FOLLOWING 5 FUNCTIONS ARE FOR COORDINATING THE DELETION
-    // OF A LIST, WHICH INCLUDES USING A VERIFICATION MODAL. THE
-    // FUNCTIONS ARE markListForDeletion, deleteList, deleteMarkedList,
-    // showDeleteListModal, and hideDeleteListModal
     store.markListForDeletion = function (id) {
         async function getListToDelete(id) {
             let response = await storeRequestSender.getPlaylistById(id);
@@ -380,8 +305,6 @@ function GlobalStoreContextProvider(props) {
         store.hideModals();
 
     }
-    // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
-    // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
 
     store.showAddSongModal = () => {
         storeReducer({
@@ -426,10 +349,6 @@ function GlobalStoreContextProvider(props) {
         return store.currentModal === CurrentModal.ERROR;
     }
 
-    // THE FOLLOWING 8 FUNCTIONS ARE FOR COORDINATING THE UPDATING
-    // OF A LIST, WHICH INCLUDES DEALING WITH THE TRANSACTION STACK. THE
-    // FUNCTIONS ARE setCurrentList, addMoveItemTransaction, addUpdateItemTransaction,
-    // moveItem, updateItem, updateCurrentList, undo, and redo
     store.setCurrentList = function (id) {
         async function asyncSetCurrentList(id) {
             let response = await storeRequestSender.getPlaylistById(id);
@@ -452,10 +371,6 @@ function GlobalStoreContextProvider(props) {
 
     store.getPlaylistSize = function () {
         return store.currentList.songs.length;
-    }
-    store.addNewSong = function () {
-        let index = this.getPlaylistSize();
-        this.addCreateSongTransaction(index, "Untitled", "?", new Date().getFullYear(), "dQw4w9WgXcQ");
     }
 
     store.createSong = function (title, artist, year, youTubeId) {
@@ -487,12 +402,9 @@ function GlobalStoreContextProvider(props) {
         asyncUpdateSong();
     }
 
-    // THIS FUNCTION MOVES A SONG IN THE CURRENT LIST FROM
-    // start TO end AND ADJUSTS ALL OTHER ITEMS ACCORDINGLY
     store.moveSong = function (start, end) {
         let list = store.currentList;
 
-        // WE NEED TO UPDATE THE STATE FOR THE APP
         if (start < end) {
             let temp = list.songs[start];
             for (let i = start; i < end; i++) {
@@ -508,7 +420,6 @@ function GlobalStoreContextProvider(props) {
             list.songs[end] = temp;
         }
 
-        // NOW MAKE IT OFFICIAL
         store.updateCurrentList();
     }
 
@@ -528,12 +439,6 @@ function GlobalStoreContextProvider(props) {
             }
         }
         asyncDeleteSong();
-    }
-
-    store.addNewSong = () => {
-        let playlistSize = store.getPlaylistSize();
-        store.addCreateSongTransaction(
-            playlistSize, "Untitled", "?", new Date().getFullYear(), "dQw4w9WgXcQ");
     }
 
     store.loadSongs = async function () {
@@ -570,40 +475,16 @@ function GlobalStoreContextProvider(props) {
         });
     }
 
-    // THIS FUNCDTION ADDS A CreateSong_Transaction TO THE TRANSACTION STACK
-    store.addCreateSongTransaction = (index, title, artist, year, youTubeId) => {
-        // ADD A SONG ITEM AND ITS NUMBER
-        let song = {
-            title: title,
-            artist: artist,
-            year: year,
-            youTubeId: youTubeId
-        };
-        let transaction = new CreateSong_Transaction(store, index, song);
-        tps.processTransaction(transaction);
-    }
     store.addMoveSongTransaction = function (start, end) {
         let transaction = new MoveSong_Transaction(store, start, end);
         tps.processTransaction(transaction);
     }
-    // THIS FUNCTION ADDS A RemoveSong_Transaction TO THE TRANSACTION STACK
+
     store.addRemoveSongTransaction = (song, index) => {
-        //let index = store.currentSongIndex;
-        //let song = store.currentList.songs[index];
         let transaction = new RemoveSong_Transaction(store, index, song);
         tps.processTransaction(transaction);
     }
-    store.addUpdateSongTransaction = function (index, newSongData) {
-        let song = store.currentList.songs[index];
-        let oldSongData = {
-            title: song.title,
-            artist: song.artist,
-            year: song.year,
-            youTubeId: song.youTubeId
-        };
-        let transaction = new UpdateSong_Transaction(this, index, oldSongData, newSongData);
-        tps.processTransaction(transaction);
-    }
+
     store.updateCurrentList = function () {
         async function asyncUpdateCurrentList() {
             const response = await storeRequestSender.updatePlaylistById(store.currentList._id, store.currentList);
@@ -633,14 +514,6 @@ function GlobalStoreContextProvider(props) {
     }
     store.canClose = function () {
         return (store.currentList !== null);
-    }
-
-    // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
-    store.setIsListNameEditActive = function () {
-        storeReducer({
-            type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
-            payload: null
-        });
     }
 
     function KeyPress(event) {

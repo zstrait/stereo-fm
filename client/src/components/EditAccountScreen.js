@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import AuthContext from '../auth'
-import MUIErrorModal from './MUIErrorModal'
+import ErrorModal from './ErrorModal'
 import Copyright from './Copyright'
 import { useHistory } from 'react-router-dom'
 
@@ -34,7 +34,7 @@ export default function EditAccountScreen() {
             setFormData({
                 userName: auth.user.userName,
                 email: auth.user.email,
-                password: "", 
+                password: "",
                 passwordVerify: ""
             });
             setAvatar(auth.user.avatar || "");
@@ -107,7 +107,7 @@ export default function EditAccountScreen() {
 
     let modalJSX = "";
     if (auth.errorMessage !== null && !isEmailError) {
-        modalJSX = <MUIErrorModal />;
+        modalJSX = <ErrorModal />;
     }
 
     return (

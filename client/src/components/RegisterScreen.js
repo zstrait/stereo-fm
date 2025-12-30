@@ -1,13 +1,12 @@
 import { useContext, useState } from 'react';
 import AuthContext from '../auth'
-import MUIErrorModal from './MUIErrorModal'
+import ErrorModal from './ErrorModal'
 import Copyright from './Copyright'
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -91,12 +90,11 @@ export default function RegisterScreen() {
 
     let modalJSX = "";
     if (auth.errorMessage !== null && !isEmailError) {
-        modalJSX = <MUIErrorModal />;
+        modalJSX = <ErrorModal />;
     }
 
     return (
         <Container component="main" maxWidth="md">
-            <CssBaseline />
             <Box
                 sx={{
                     marginTop: 8,
@@ -105,7 +103,7 @@ export default function RegisterScreen() {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                <Avatar sx={{ m: 1, bgcolor: '#6D5D6E' }}>
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">

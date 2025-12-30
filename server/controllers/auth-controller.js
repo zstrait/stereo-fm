@@ -14,7 +14,6 @@ getLoggedIn = async (req, res) => {
         }
 
         const loggedInUser = await db.getUserById(userId);
-        console.log("loggedInUser: " + loggedInUser);
         if (!loggedInUser) {
             return res.status(401).json({
                 loggedIn: false,
@@ -32,13 +31,12 @@ getLoggedIn = async (req, res) => {
             }
         })
     } catch (err) {
-        console.log("err: " + err);
+        console.error(err);
         res.status(500).send();
     }
 }
 
 loginUser = async (req, res) => {
-    console.log("loginUser");
     try {
         const { email, password } = req.body;
 
@@ -49,7 +47,6 @@ loginUser = async (req, res) => {
         }
 
         const existingUser = await db.getUserByEmail(email);
-        console.log("existingUser: " + existingUser);
         if (!existingUser) {
             return res
                 .status(401)
@@ -58,10 +55,8 @@ loginUser = async (req, res) => {
                 })
         }
 
-        console.log("provided password: " + password);
         const passwordCorrect = await bcrypt.compare(password, existingUser.passwordHash);
         if (!passwordCorrect) {
-            console.log("Incorrect password");
             return res
                 .status(401)
                 .json({
@@ -71,7 +66,6 @@ loginUser = async (req, res) => {
 
         // LOGIN THE USER
         const token = auth.signToken(existingUser._id);
-        console.log(token);
 
         res.cookie("token", token, {
             httpOnly: true,
@@ -102,18 +96,15 @@ logoutUser = async (req, res) => {
 }
 
 registerUser = async (req, res) => {
-    console.log("REGISTERING USER IN BACKEND");
     try {
         const { userName, email, password, passwordVerify, avatar } = req.body;
-        console.log("create user: " + userName + " " + email + " " + password + " " + passwordVerify);
-
 
         if (!userName || !email || !password || !passwordVerify || !avatar) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
         }
-        console.log("all fields provided");
+
         if (password.length < 8) {
             return res
                 .status(400)
@@ -121,7 +112,7 @@ registerUser = async (req, res) => {
                     errorMessage: "Please enter a password of at least 8 characters."
                 });
         }
-        console.log("password long enough");
+
         if (password !== passwordVerify) {
             return res
                 .status(400)
@@ -129,9 +120,8 @@ registerUser = async (req, res) => {
                     errorMessage: "Please enter the same password twice."
                 })
         }
-        console.log("password and password verify match");
+
         const existingUser = await db.getUserByEmail(email);
-        console.log("existingUser: " + existingUser);
         if (existingUser) {
             return res
                 .status(400)
@@ -144,14 +134,11 @@ registerUser = async (req, res) => {
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);
-        console.log("passwordHash: " + passwordHash);
 
         const savedUser = await db.createUser({ userName, email, passwordHash, avatar });
-        console.log("new user saved: " + savedUser._id);
 
         // LOGIN THE USER
         const token = auth.signToken(savedUser._id);
-        console.log("token:" + token);
 
         await res.cookie("token", token, {
             httpOnly: true,
@@ -165,8 +152,6 @@ registerUser = async (req, res) => {
                 avatar: savedUser.avatar
             }
         })
-
-        console.log("token sent");
 
     } catch (err) {
         console.error(err);

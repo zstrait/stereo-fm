@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom'
 import authRequestSender from './requests'
 
 const AuthContext = createContext();
-console.log("create AuthContext: " + AuthContext);
 
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR AUTH STATE THAT CAN BE PROCESSED
 export const AuthActionType = {

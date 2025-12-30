@@ -1,5 +1,5 @@
 {
-    "name": "playlister-server",
+    "name": "stereo-fm-server",
     "version": "4.0.0",
     "main": "index.js",
     "scripts": {
@@ -11,15 +11,13 @@
     "license": "MIT",
     "dependencies": {
         "bcryptjs": "^2.4.3",
-        "body-parser": "^1.19.0",
-        "cookie-parser": "^1.4.5",
+        "body-parser": "^1.20.2",
+        "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
-        "dotenv": "^10.0.0",
-        "express": "^4.16.4",
-        "jsonwebtoken": "^8.5.1",
-        "mongoose": "^5.7.5",
-        "pg": "^8.16.3",
-        "sequelize": "^6.37.7",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.0.3",
         "vitest": "^3.2.4"
     }
 }
