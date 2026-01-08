@@ -441,6 +441,18 @@ function GlobalStoreContextProvider(props) {
         asyncDeleteSong();
     }
 
+    store.removeSong = function (index) {
+        let list = store.currentList;
+        list.songs.splice(index, 1);
+        store.updateCurrentList();
+    }
+
+    store.insertSong = function (index, song) {
+        let list = store.currentList;
+        list.songs.splice(index, 0, song);
+        store.updateCurrentList();
+    }
+
     store.loadSongs = async function () {
         const criteria = store.searchCriteria || {};
         const response = await storeRequestSender.getSongs(criteria, store.sortCriteria);

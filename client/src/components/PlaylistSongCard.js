@@ -26,7 +26,7 @@ export default function PlaylistSongCard({ song, index }) {
 
     const handleRemoveSong = (event) => {
         event.stopPropagation();
-        store.removeSong(index);
+        store.addRemoveSongTransaction(song, index);
     };
 
     return (
