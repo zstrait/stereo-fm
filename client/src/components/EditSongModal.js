@@ -21,6 +21,7 @@ const style = {
 
 export default function EditSongModal() {
     const { store } = useContext(GlobalStoreContext);
+    const [error, setError] = useState(false);
     const [formData, setFormData] = useState({
         title: "",
         artist: "",
@@ -30,6 +31,7 @@ export default function EditSongModal() {
 
     useEffect(() => {
         if (store.currentSong) {
+            setError(false);
             setFormData({
                 ...store.currentSong,
                 youTubeId: "https://www.youtube.com/watch?v=" + store.currentSong.youTubeId
@@ -38,21 +40,25 @@ export default function EditSongModal() {
     }, [store.currentSong]);
 
     const handleChange = (prop) => (event) => {
+        if (prop === 'youTubeId') setError(false);
         setFormData({ ...formData, [prop]: event.target.value });
     };
 
     const parseYouTubeId = (url) => {
-        if (!url) return "";
+        if (!url) return null;
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : url;
+        return (match && match[2].length === 11) ? match[2] : null;
     };
 
     const handleConfirm = () => {
-        store.updateSong(store.currentSong._id, {
-            ...formData,
-            youTubeId: parseYouTubeId(formData.youTubeId)
-        });
+        const youTubeId = parseYouTubeId(formData.youTubeId);
+        if (!youTubeId) {
+            setError(true);
+            return;
+        }
+
+        store.updateSong(store.currentSong._id, { ...formData, youTubeId });
     };
 
     const handleCancel = () => {
@@ -76,7 +82,14 @@ export default function EditSongModal() {
                     <TextField label="Title" fullWidth value={formData.title} onChange={handleChange('title')} />
                     <TextField label="Artist" fullWidth value={formData.artist} onChange={handleChange('artist')} />
                     <TextField label="Year" fullWidth value={formData.year} onChange={handleChange('year')} />
-                    <TextField label="YouTube Link" fullWidth value={formData.youTubeId} onChange={handleChange('youTubeId')} />
+                    <TextField
+                        label="YouTube Link"
+                        fullWidth
+                        value={formData.youTubeId}
+                        onChange={handleChange('youTubeId')}
+                        error={error}
+                        helperText={error ? "Invalid YouTube Link Format" : ""}
+                    />
                 </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>

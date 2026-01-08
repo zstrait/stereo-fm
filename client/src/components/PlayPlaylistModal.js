@@ -83,7 +83,18 @@ export default function PlayPlaylistModal() {
         }
     };
 
+    const getCleanVideoId = (rawInput) => {
+        if (!rawInput) return null;
+        if (rawInput.length === 11) return rawInput;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = rawInput.match(regExp);
+        if (match && match[2].length === 11) return match[2];
+        return null;
+    };
+
     const currentSong = store.currentList?.songs[currentIndex];
+    const videoId = getCleanVideoId(currentSong?.youTubeId);
+
     const opts = {
         height: '250',
         width: '100%',
@@ -118,7 +129,8 @@ export default function PlayPlaylistModal() {
                                     borderRadius: 1,
                                     border: '1px solid #A7C1A8',
                                     mx: 1,
-                                    width: 'auto'
+                                    width: 'auto',
+                                    cursor: 'pointer' 
                                 }}
                             >
                                 <Typography fontWeight="bold">
@@ -131,16 +143,33 @@ export default function PlayPlaylistModal() {
 
                 <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Box sx={{ width: '100%', mb: 2, marginTop: 10 }}>
-                        <YouTube
-                            videoId={currentSong?.youTubeId}
-                            opts={opts}
-                            onReady={handlePlayerReady}
-                            onStateChange={(e) => {
-                                if (e.data === 1) setIsPlaying(true);
-                                if (e.data === 2) setIsPlaying(false);
-                                if (e.data === 0) handleNext();
-                            }}
-                        />
+                        {videoId ? (
+                            <YouTube
+                                key={videoId} 
+                                videoId={videoId}
+                                opts={opts}
+                                onReady={handlePlayerReady}
+                                onStateChange={(e) => {
+                                    if (e.data === 1) setIsPlaying(true);
+                                    if (e.data === 2) setIsPlaying(false);
+                                    if (e.data === 0) handleNext();
+                                }}
+                                onError={() => handleNext()} 
+                            />
+                        ) : (
+                            <Box sx={{
+                                height: '250px',
+                                width: '100%',
+                                bgcolor: 'black',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white'
+                            }}>
+                                <Typography color="error" fontWeight="bold">Invalid Video Link</Typography>
+                            </Box>
+                        )}
                     </Box>
 
                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'transparent', p: 0, width: '100%' }}>
