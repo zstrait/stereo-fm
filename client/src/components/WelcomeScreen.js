@@ -7,9 +7,9 @@ export default function WelcomeScreen() {
                 <span className="welcome-title">StereoFM</span>
                 <div className="welcome-logo"></div>
                 <div className="welcome-buttons-container">
-                    <Link to="/songs" className="welcome-button">Continue as Guest</Link>
-                    <Link to="/login" className="welcome-button">Login</Link>
                     <Link to="/register" className="welcome-button">Create Account</Link>
+                    <Link to="/login" className="welcome-button">Login</Link>
+                    <Link to="/songs" className="welcome-button">Continue as Guest</Link>
                 </div>
             </div>
         </>

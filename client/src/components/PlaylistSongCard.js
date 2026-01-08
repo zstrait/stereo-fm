@@ -55,10 +55,7 @@ export default function PlaylistSongCard({ song, index }) {
                 <Typography variant="h6" fontWeight="bold">{song.title} by {song.artist} ({song.year})</Typography>
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton><ContentCopyIcon sx={{ fontSize: 30 }} /></IconButton>
-                <IconButton onClick={handleRemoveSong}><CloseIcon sx={{ fontSize: 30 }} /></IconButton>
-            </Box>
+            <IconButton onClick={handleRemoveSong}><CloseIcon sx={{ fontSize: 30 }} /></IconButton>
         </Box>
     );
 }

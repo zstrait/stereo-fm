@@ -63,7 +63,7 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore(prevStore => ({
                     ...prevStore,
-                    currentModal: CurrentModal.NONE,
+                    currentModal: prevStore.currentModal === CurrentModal.EDIT_PLAYLIST ? CurrentModal.EDIT_PLAYLIST : CurrentModal.NONE,
                     playlists: payload.playlists,
                     currentList: payload.playlist,
                     currentSongIndex: -1,
@@ -126,7 +126,7 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.SET_CURRENT_LIST: {
                 return setStore(prevStore => ({
                     ...prevStore,
-                    currentModal: CurrentModal.NONE,
+                    currentModal: prevStore.currentModal === CurrentModal.EDIT_PLAYLIST ? CurrentModal.EDIT_PLAYLIST : CurrentModal.NONE,
                     currentList: payload,
                     currentSongIndex: -1,
                     currentSong: null,
