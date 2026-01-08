@@ -31,10 +31,8 @@ export default function EditSongModal() {
     useEffect(() => {
         if (store.currentSong) {
             setFormData({
-                title: store.currentSong.title,
-                artist: store.currentSong.artist,
-                year: store.currentSong.year,
-                youTubeId: store.currentSong.youTubeId
+                ...store.currentSong,
+                youTubeId: "https://www.youtube.com/watch?v=" + store.currentSong.youTubeId
             });
         }
     }, [store.currentSong]);
@@ -43,8 +41,18 @@ export default function EditSongModal() {
         setFormData({ ...formData, [prop]: event.target.value });
     };
 
+    const parseYouTubeId = (url) => {
+        if (!url) return "";
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : url;
+    };
+
     const handleConfirm = () => {
-        store.updateSong(store.currentSong._id, formData);
+        store.updateSong(store.currentSong._id, {
+            ...formData,
+            youTubeId: parseYouTubeId(formData.youTubeId)
+        });
     };
 
     const handleCancel = () => {
@@ -68,7 +76,7 @@ export default function EditSongModal() {
                     <TextField label="Title" fullWidth value={formData.title} onChange={handleChange('title')} />
                     <TextField label="Artist" fullWidth value={formData.artist} onChange={handleChange('artist')} />
                     <TextField label="Year" fullWidth value={formData.year} onChange={handleChange('year')} />
-                    <TextField label="YouTube ID" fullWidth value={formData.youTubeId} onChange={handleChange('youTubeId')} />
+                    <TextField label="YouTube Link" fullWidth value={formData.youTubeId} onChange={handleChange('youTubeId')} />
                 </Box>
 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
