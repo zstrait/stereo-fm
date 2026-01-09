@@ -108,6 +108,13 @@ export const incrementListens = (songId) => {
     });
 }
 
+export const incrementPlaylistListens = (playlistId) => {
+    return fetch(`http://localhost:4000/store/playlist/${playlistId}/listen`, {
+        method: 'PUT',
+        credentials: 'include', 
+    });
+}
+
 const apis = {
     createPlaylist,
     deletePlaylistById,
@@ -119,7 +126,8 @@ const apis = {
     updateSong,
     deleteSong,
     getSongs,
-    incrementListens
+    incrementListens,
+    incrementPlaylistListens
 }
 
 export default apis;

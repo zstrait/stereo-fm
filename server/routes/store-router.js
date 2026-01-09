@@ -9,6 +9,7 @@ router.get('/playlist/:id', auth.verify, StoreController.getPlaylistById)
 router.get('/playlistpairs', auth.verify, StoreController.getPlaylistPairs)
 router.get('/playlists', StoreController.getPlaylists)
 router.put('/playlist/:id', auth.verify, StoreController.updatePlaylist)
+router.put('/playlist/:id/listen', StoreController.incrementPlaylistListens);
 router.put('/playlist/:id/song', auth.verify, StoreController.addSongToPlaylist)
 
 router.post('/song', auth.verify, StoreController.createSong)

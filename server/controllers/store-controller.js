@@ -323,6 +323,23 @@ incrementListens = async (req, res) => {
     }
 }
 
+incrementPlaylistListens = async (req, res) => {
+    try {
+        const playlistId = req.params.id;
+        const userId = auth.verifyUser(req);
+        const user = userId ? await db.getUserById(userId) : null;
+        const listenerIdentifier = user ? user.email : "guest-user";
+
+        await db.incrementPlaylistListens(playlistId, listenerIdentifier);
+
+        return res.status(200).json({ success: true });
+    } catch (err) {
+        console.error("Increment Playlist Listens Error:", err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+}
+
+
 module.exports = {
     createPlaylist,
     deletePlaylist,
@@ -335,5 +352,6 @@ module.exports = {
     getSongs,
     deleteSong,
     addSongToPlaylist,
-    incrementListens
+    incrementListens,
+    incrementPlaylistListens
 }

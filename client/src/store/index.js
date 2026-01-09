@@ -101,12 +101,11 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.LOAD_PLAYLISTS: {
                 return setStore(prevStore => ({
                     ...prevStore,
-                    currentModal: CurrentModal.NONE,
+                    currentModal: prevStore.currentModal === CurrentModal.PLAY_PLAYLIST ? CurrentModal.PLAY_PLAYLIST : CurrentModal.NONE,
                     playlists: payload,
-                    currentList: null,
+                    currentList: prevStore.currentModal === CurrentModal.PLAY_PLAYLIST ? prevStore.currentList : null,
                     currentSongIndex: -1,
                     currentSong: null,
-                    listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
                 }));
@@ -319,6 +318,11 @@ function GlobalStoreContextProvider(props) {
         });
     }
     store.showPlayPlaylistModal = (playlist) => {
+        async function incrementListens() {
+            await storeRequestSender.incrementPlaylistListens(playlist._id);
+            store.loadPlaylists();
+        }
+        incrementListens();
         storeReducer({
             type: GlobalStoreActionType.SET_CURRENT_MODAL,
             payload: { modal: "PLAY_PLAYLIST", list: playlist }

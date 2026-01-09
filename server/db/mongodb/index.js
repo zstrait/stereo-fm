@@ -210,6 +210,14 @@ class MongoDatabaseManager extends DatabaseManager {
         );
     }
 
+    async incrementPlaylistListens(playlistId, userId) {
+        return await Playlist.findByIdAndUpdate(
+            playlistId,
+            { $addToSet: { listenerIds: userId } }, 
+            { new: true }
+        );
+    }
+
     async clear() {
         await User.deleteMany({});
         await Playlist.deleteMany({});
