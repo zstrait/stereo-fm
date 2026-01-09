@@ -30,7 +30,7 @@ export default function PlaylistCard({ playlist }) {
         event.stopPropagation();
         store.showEditPlaylistModal(playlist);
     };
-    const handleCopy = (event) => event.stopPropagation();
+
     const handlePlay = (event) => {
         event.stopPropagation();
         store.showPlayPlaylistModal(playlist);

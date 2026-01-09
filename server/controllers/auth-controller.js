@@ -267,10 +267,10 @@ async function setupDemoAccount(demoUser) {
             published: true
         });
     }
-
+    
     const createdPlaylists = await Playlist.insertMany(playlistsToInsert);
-
     demoUser.playlists = createdPlaylists.map(p => p._id);
+
     await demoUser.save();
 }
 
@@ -278,19 +278,17 @@ loginDemoUser = async (req, res) => {
     console.log("Attempting Demo Login...");
     try {
         const demoEmail = "demo@stereo.fm";
+        const pfpPath = path.resolve(__dirname, '../test/data/demo/demo-pfp.png');
+        let demoAvatar = "";
+        if (fs.existsSync(pfpPath)) {
+            demoAvatar = `data:image/png;base64,${fs.readFileSync(pfpPath).toString('base64')}`;
+        }
 
         let demoUser = await db.getUserByEmail(demoEmail);
         if (!demoUser) {
             console.log("Creating new Demo User...");
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash("demopassword", salt);
-
-            const pfpPath = path.resolve(__dirname, '../test/data/demo/demo-pfp.png');
-            let demoAvatar = "";
-            if (fs.existsSync(pfpPath)) {
-                demoAvatar = `data:image/png;base64,${fs.readFileSync(pfpPath).toString('base64')}`;
-            }
-
             demoUser = await db.createUser({
                 userName: "Demo User",
                 email: demoEmail,
@@ -299,6 +297,9 @@ loginDemoUser = async (req, res) => {
             });
         }
 
+        demoUser.userName = "Demo User";
+        demoUser.avatar = demoAvatar;
+        await demoUser.save();
         await setupDemoAccount(demoUser);
 
         const token = auth.signToken(demoUser._id);
@@ -318,10 +319,11 @@ loginDemoUser = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("DEMO LOGIN ERROR:", err);
+        console.error("CRITICAL DEMO LOGIN ERROR:", err);
         res.status(500).json({ errorMessage: "Server Error: " + err.message });
     }
 }
+
 
 module.exports = {
     getLoggedIn,

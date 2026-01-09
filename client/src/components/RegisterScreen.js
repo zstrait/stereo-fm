@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import AuthContext from '../auth'
 import ErrorModal from './ErrorModal'
 import Copyright from './Copyright'
+import DefaultPfpsMenu from './DefaultPfpsMenu';
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -46,26 +47,92 @@ export default function RegisterScreen() {
         );
     };
 
-    const handleFileRead = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const base64 = await convertBase64(file);
-            setAvatar(base64);
+    const loadImage = (file) => {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            const url = URL.createObjectURL(file);
+            image.src = url;
+            image.onload = () => {
+                resolve({ image, url });
+            };
+            image.onerror = (error) => {
+                URL.revokeObjectURL(url);
+                reject(error);
+            };
+        });
+    };
+
+    const getImageDimensions = async (file) => {
+        const { image, url } = await loadImage(file);
+        const dimensions = { width: image.width, height: image.height };
+        URL.revokeObjectURL(url);
+        return dimensions;
+    };
+
+    const resizeImage = async (file) => {
+        const targetSize = 250;
+        const { image, url } = await loadImage(file);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+        const context = canvas.getContext('2d');
+
+        const { width, height } = image;
+        let sx = 0, sy = 0, sWidth = width, sHeight = height;
+
+        if (width > height) {
+            sWidth = height;
+            sx = (width - height) / 2;
+        } else if (height > width) {
+            sHeight = width;
+            sy = (height - width) / 2;
         }
-    }
+
+        context.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, targetSize, targetSize);
+
+        return new Promise((resolve, reject) => {
+            canvas.toBlob((blob) => {
+                URL.revokeObjectURL(url);
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject(new Error('Canvas to Blob conversion failed'));
+                }
+            }, 'image/png');
+        });
+    };
 
     const convertBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
-            fileReader.onload = () => {
-                resolve(fileReader.result);
+            fileReader.onload = () => resolve(fileReader.result);
+            fileReader.onerror = (error) => reject(error);
+        });
+    };
+
+    const handleFileRead = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const { width, height } = await getImageDimensions(file);
+            let imageToConvert = file;
+
+            if (width !== 250 || height !== 250) {
+                console.log("Resizing image...");
+                imageToConvert = await resizeImage(file);
+            } else {
+                console.log("Image is already 250x250, skipping resize.");
             }
-            fileReader.onerror = (error) => {
-                reject(error);
-            }
-        })
-    }
+
+            const base64 = await convertBase64(imageToConvert);
+            setAvatar(base64);
+        } catch (error) {
+            console.error("Image processing failed:", error);
+        }
+    };
 
     const getEndAdornment = (prop) => (
         formData[prop] ? (
@@ -112,18 +179,18 @@ export default function RegisterScreen() {
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: 6, transform: 'translateX(-70px)' }}>
 
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            position: 'relative',
+                            transform: 'translate(-20%, -35%)',
+                        }}>
                             <Box sx={{
-                                width: 100,
-                                height: 100,
-                                border: '1px solid grey',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                overflow: 'hidden',
-                                mb: 1,
-                                bgcolor: 'lightgrey'
+                                width: 100, height: 100, border: '1px solid grey', borderRadius: '50%',
+                                display: 'flex', justifyContent: 'center', alignItems: 'center',
+                                overflow: 'hidden', mb: 1, bgcolor: '#dcdbdaff',
+                                transform: 'translate(-48%, 10%)',
                             }}>
                                 {avatar ? (
                                     <img src={avatar} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -131,19 +198,21 @@ export default function RegisterScreen() {
                                     <AccountCircle sx={{ fontSize: 100, color: 'grey' }} />
                                 )}
                             </Box>
-                            <Button
-                                variant="contained"
-                                component="label"
-                                size="small"
-                            >
-                                Select
-                                <input
-                                    type="file"
-                                    hidden
-                                    accept="image/*"
-                                    onChange={handleFileRead}
-                                />
+                            <Button sx={{ transform: 'translate(-65%, 40%)', }} variant="contained" component="label" size="small">
+                                Upload
+                                <input type="file" hidden accept="image/*" onChange={handleFileRead} />
                             </Button>
+
+                            <Box sx={{
+                                position: 'absolute',
+                                top: '101%',
+                                left: '50%',
+                                transform: 'translateX(-70%)',
+                                mt: 1,
+                                zIndex: 10
+                            }}>
+                                <DefaultPfpsMenu onSelectAvatar={setAvatar} />
+                            </Box>
                         </Box>
 
                         <Box sx={{ width: '400px' }}>
