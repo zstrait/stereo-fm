@@ -55,17 +55,18 @@ body {
 .welcome-title {
     font-size: 72px;
     font-weight: 600;
-    margin-bottom: -12px;
+    margin-bottom: -32px;
+    transform: translate(-2%,-8%);
 }
 
 .welcome-logo {
-    background-image: url("./images/playlister-logo.svg");
+    background-image: url("./images/stereo-logo.svg");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    width: 300px;
-    height: 300px;
-    opacity: .85;
+    width: 320px;
+    height: 320px;
+    transform: translateX(-3%)
 }
 
 .welcome-buttons-container {
