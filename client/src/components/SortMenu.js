@@ -25,10 +25,10 @@ export default function SortMenu({ sortOptions, onSort, currentSortValue }) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
             <Box onClick={handleClick} sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1 }}>
-                    Sort: <span style={{ color: '#1976d2' }}>{currentSortValue}</span>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mr: 1, color: '#393646' }}>
+                    Sort: <span style={{ color: '#957083ff' }}>{currentSortValue}</span>
                 </Typography>
-                <SortIcon />
+                <SortIcon sx={{color: '#393646', transform:'translateY(-1px)'}}/>
             </Box>
             <Menu
                 anchorEl={anchorEl}

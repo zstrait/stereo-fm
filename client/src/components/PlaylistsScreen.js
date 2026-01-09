@@ -3,7 +3,7 @@ import { GlobalStoreContext } from '../store';
 import AuthContext from '../auth';
 import SearchMenu from './SearchMenu';
 import SortMenu from './SortMenu';
-import PlaylistCard from './PlaylistCard'; 
+import PlaylistCard from './PlaylistCard';
 import DeletePlaylistModal from './DeletePlaylistModal';
 import PlayPlaylistModal from './PlayPlaylistModal';
 import EditPlaylistModal from './EditPlaylistModal';
@@ -17,7 +17,7 @@ export default function PlaylistsScreen() {
     const { auth } = useContext(AuthContext);
 
     useEffect(() => {
-        store.loadPlaylists(); 
+        store.loadPlaylists();
     }, [store.searchCriteria, store.sortCriteria]);
 
     useEffect(() => {
@@ -53,42 +53,83 @@ export default function PlaylistsScreen() {
     ];
 
     return (
-        <Box sx={{ display: 'flex', height: '85vh', backgroundColor: '#f5f5f5' }}>
-            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2, borderRight: '1px solid #ccc' }}>
+        <Box sx={{ display: 'flex', height: '85vh', backgroundColor: '#F4EEE0' }}>
+            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2, justifyContent: 'space-between', borderRight: '1px solid #ccc' }}>
                 <SearchMenu
                     title="Playlists"
                     inputFields={playlistInputFields}
                     onSearch={handleSearch}
                 />
+                {auth.loggedIn && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', transform: 'translate(-252px, 22px)' }}>
+                        <Button
+                            variant="text"
+                            sx={{
+                                bgcolor: 'transparent',
+                                color: '#96818ce1',
+                                transform: 'translate(80px,-64px)',
+                                borderRadius: 5,
+                                px: 1,
+                                minWidth: 'auto',
+                                position: 'relative',
+                                transition: 'color 0.3s ease',
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: '2.5rem'
+                                },
+                                '&:hover': {
+                                    bgcolor: 'transparent',
+                                    color: '#5b4575ea',
+                                    '& .playlist-text': {
+                                        maxWidth: '120px',
+                                        opacity: 1,
+                                        paddingRight: '8px'
+                                    }
+                                },
+                                '& .playlist-text': {
+                                    position: 'absolute',
+                                    left: '100%',
+                                    maxWidth: 0,
+                                    opacity: 0,
+                                    paddingRight: 0,
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    transition: 'all 0.3s ease',
+                                    textDecoration: 'underline',
+                                    textUnderlineOffset: '3px',
+                                    textDecorationThickness: '1px',
+                                    fontSize: '1rem'
+                                }
+                            }}
+                            onClick={handleNewPlaylist}
+                        >
+                            <span className="playlist-text">New Playlist</span>
+                            <AddCircleOutlineIcon />
+                        </Button>
+                    </Box>
+                )}
             </Box>
 
             <Box sx={{ width: '65%', display: 'flex', flexDirection: 'column', p: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, transform: 'translateY(2px)' }}>
                     <SortMenu
                         sortOptions={playlistSortOptions}
                         onSort={handleSort}
                         currentSortValue={store.sortCriteria}
                     />
-                    <Typography variant="h6">{store.playlists ? store.playlists.length : 0} Playlists</Typography>
+                    <Typography variant="h6" sx={{ color: '#393646' }}>{store.playlists ? store.playlists.length : 0} Playlists</Typography>
                 </Box>
 
-                <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2 }}>
-                    {store.playlists && store.playlists.map((playlist) => (
-                        <PlaylistCard
-                            key={playlist._id}
-                            playlist={playlist}
-                        />
-                    ))}
-                </Box>
-
-                {auth.loggedIn && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button variant="contained" sx={{ borderRadius: 5, px: 3, gap: 1 }} onClick={handleNewPlaylist}>
-                            <AddCircleOutlineIcon />
-                            New Playlist
-                        </Button>
+                <Box sx={{ flexGrow: 1, overflow: 'hidden', mb: 2, paddingBottom: '24px' }}>
+                    <Box sx={{ height: '100%', overflowY: 'auto', px: 2, paddingTop: '6px' }}>
+                        {store.playlists && store.playlists.map((playlist) => (
+                            <PlaylistCard
+                                key={playlist._id}
+                                playlist={playlist}
+                            />
+                        ))}
                     </Box>
-                )}
+                </Box>
+
                 <DeletePlaylistModal />
                 <PlayPlaylistModal />
                 <EditPlaylistModal />
