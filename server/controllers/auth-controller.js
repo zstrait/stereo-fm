@@ -200,6 +200,7 @@ updateUser = async (req, res) => {
         }
 
         const updatedUser = await db.updateUser(email, updateData);
+        await db.updatePlaylistsUserInfo(email, updatedUser);
 
         return res.status(200).json({
             success: true,

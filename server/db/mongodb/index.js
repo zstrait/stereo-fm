@@ -184,6 +184,16 @@ class MongoDatabaseManager extends DatabaseManager {
         return await Playlist.findOneAndUpdate({ _id: playlistId }, playlistData, { new: true });
     }
 
+    async updatePlaylistsUserInfo(email, newUserData) {
+        await Playlist.updateMany(
+            { ownerEmail: email },
+            { $set: { 
+                ownerName: newUserData.userName,
+                ownerAvatar: newUserData.avatar
+            }}
+        );
+    }
+
     async incrementListens(songId) {
         return await Song.findByIdAndUpdate(
             songId,
