@@ -50,9 +50,20 @@ export const updateUser = (email, userData) => {
     });
 }
 
+export const loginDemoUser = () => {
+    return fetch('http://localhost:4000/auth/login-demo/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include'
+    });
+}
+
 const apis = {
     getLoggedIn,
     loginUser,
+    loginDemoUser,
     logoutUser,
     registerUser,
     updateUser

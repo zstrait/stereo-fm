@@ -1,6 +1,10 @@
 const { db } = require('../index.js');
 const auth = require('../auth')
 const bcrypt = require('bcryptjs')
+const fs = require('fs');
+const path = require('path');
+const Playlist = require('../db/mongodb/models/playlist-model');
+const Song = require('../db/mongodb/models/song-model');
 
 getLoggedIn = async (req, res) => {
     try {
@@ -134,10 +138,7 @@ registerUser = async (req, res) => {
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);
-
         const savedUser = await db.createUser({ userName, email, passwordHash, avatar });
-
-        // LOGIN THE USER
         const token = auth.signToken(savedUser._id);
 
         await res.cookie("token", token, {
@@ -215,10 +216,118 @@ updateUser = async (req, res) => {
     }
 }
 
+async function setupDemoAccount(demoUser) {
+    const demoEmail = demoUser.email;
+
+    await Playlist.deleteMany({ ownerEmail: demoEmail });
+    await Song.deleteMany({ ownerEmail: demoEmail });
+    demoUser.playlists = [];
+
+    const dataPath = path.resolve(__dirname, '../test/data/demo/demoData.json');
+    if (!fs.existsSync(dataPath)) throw new Error("Missing demoData.json at " + dataPath);
+    const demoData = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+
+    const playlistsToInsert = [];
+    const createdSongsMap = new Map();
+
+    for (const playlistDef of demoData.playlists) {
+        const songIds = [];
+
+        for (const songDef of playlistDef.songs) {
+            const uniqueKey = `${songDef.title}-${songDef.artist}`;
+            let songId;
+
+            if (createdSongsMap.has(uniqueKey)) {
+                songId = createdSongsMap.get(uniqueKey);
+            } else {
+                const newSong = await db.createSong({
+                    title: songDef.title,
+                    artist: songDef.artist,
+                    year: songDef.year,
+                    youTubeId: songDef.youTubeId,
+                    ownerEmail: demoEmail,
+                    listens: Math.floor(Math.random() * 50),
+                    playlists: 1
+                });
+                songId = newSong._id;
+                createdSongsMap.set(uniqueKey, songId);
+            }
+            songIds.push(songId);
+        }
+
+        songIds.sort(() => 0.5 - Math.random());
+
+        playlistsToInsert.push({
+            name: playlistDef.name,
+            ownerEmail: demoEmail,
+            ownerName: demoUser.userName,
+            ownerAvatar: demoUser.avatar,
+            songs: songIds,
+            listenerIds: [],
+            published: true
+        });
+    }
+
+    const createdPlaylists = await Playlist.insertMany(playlistsToInsert);
+
+    demoUser.playlists = createdPlaylists.map(p => p._id);
+    await demoUser.save();
+}
+
+loginDemoUser = async (req, res) => {
+    console.log("Attempting Demo Login...");
+    try {
+        const demoEmail = "demo@stereo.fm";
+
+        let demoUser = await db.getUserByEmail(demoEmail);
+        if (!demoUser) {
+            console.log("Creating new Demo User...");
+            const salt = await bcrypt.genSalt(10);
+            const passwordHash = await bcrypt.hash("demopassword", salt);
+
+            const pfpPath = path.resolve(__dirname, '../test/data/demo/demo-pfp.png');
+            let demoAvatar = "";
+            if (fs.existsSync(pfpPath)) {
+                demoAvatar = `data:image/png;base64,${fs.readFileSync(pfpPath).toString('base64')}`;
+            }
+
+            demoUser = await db.createUser({
+                userName: "Demo User",
+                email: demoEmail,
+                passwordHash: passwordHash,
+                avatar: demoAvatar
+            });
+        }
+
+        await setupDemoAccount(demoUser);
+
+        const token = auth.signToken(demoUser._id);
+        console.log("Demo Login Successful");
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: true
+        }).status(200).json({
+            success: true,
+            user: {
+                userName: demoUser.userName,
+                email: demoUser.email,
+                avatar: demoUser.avatar
+            }
+        });
+
+    } catch (err) {
+        console.error("DEMO LOGIN ERROR:", err);
+        res.status(500).json({ errorMessage: "Server Error: " + err.message });
+    }
+}
+
 module.exports = {
     getLoggedIn,
     loginUser,
     logoutUser,
     registerUser,
-    updateUser
+    updateUser,
+    loginDemoUser
 }

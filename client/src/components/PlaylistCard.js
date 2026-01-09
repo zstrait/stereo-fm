@@ -46,14 +46,7 @@ export default function PlaylistCard({ playlist }) {
         );
     }
 
-    let userButtons = null;
-    if (auth.loggedIn) {
-        userButtons = (
-            <>
-                <Button variant="contained" sx={{ bgcolor: 'green' }} onClick={handleCopy}>Copy</Button>
-            </>
-        );
-    }
+
 
     return (
         <Box sx={{
@@ -74,7 +67,6 @@ export default function PlaylistCard({ playlist }) {
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {ownerButtons}
-                    {userButtons}
                     <Button variant="contained" sx={{ bgcolor: 'magenta' }} onClick={handlePlay}>Play</Button>
                     <IconButton onClick={handleExpandClick}>
                         <ExpandMoreIcon />

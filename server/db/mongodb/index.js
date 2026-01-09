@@ -56,20 +56,9 @@ class MongoDatabaseManager extends DatabaseManager {
 
     async getSongs(searchCriteria, sortCriteria, userEmail) {
         let filter = {};
-        if (!searchCriteria.title && !searchCriteria.artist && !searchCriteria.year && userEmail) {
-            filter = { ownerEmail: userEmail };
-        }
-        else {
-            if (searchCriteria.title) {
-                filter.title = { $regex: new RegExp(searchCriteria.title, 'i') };
-            }
-            if (searchCriteria.artist) {
-                filter.artist = { $regex: new RegExp(searchCriteria.artist, 'i') };
-            }
-            if (searchCriteria.year) {
-                filter.year = parseInt(searchCriteria.year);
-            }
-        }
+        if (searchCriteria.title) filter.title = { $regex: new RegExp(searchCriteria.title, 'i') };
+        if (searchCriteria.artist) filter.artist = { $regex: new RegExp(searchCriteria.artist, 'i') };
+        if (searchCriteria.year) filter.year = parseInt(searchCriteria.year);
 
         let sort = {};
         if (sortCriteria) {
@@ -88,9 +77,17 @@ class MongoDatabaseManager extends DatabaseManager {
             }
         }
 
-        const songs = await Song.find(filter).sort(sort).limit(50);
-        const count = await Song.countDocuments(filter);
+        let songs = [];
 
+        if (userEmail) {
+            const mySongs = await Song.find({ ...filter, ownerEmail: userEmail }).sort(sort);
+            const otherSongs = await Song.find({ ...filter, ownerEmail: { $ne: userEmail } }).sort(sort).limit(50);
+            songs = [...mySongs, ...otherSongs];
+        } else {
+            songs = await Song.find(filter).sort(sort).limit(50);
+        }
+
+        const count = await Song.countDocuments(filter);
         return { songs, count };
     }
 

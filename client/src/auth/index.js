@@ -88,8 +88,7 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 });
-                history.push("/login");
-                auth.loginUser(email, password);
+                auth.loginUser(email, password, "/songs/");
             }
             else {
                 authReducer({
@@ -125,7 +124,7 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.loginUser = async function (email, password) {
+    auth.loginUser = async function (email, password, nextPath = "/playlists/") {
         try {
             const response = await authRequestSender.loginUser(email, password);
             const responseData = await response.json();
@@ -139,7 +138,7 @@ function AuthContextProvider(props) {
                         errorMessage: null
                     }
                 })
-                history.push("/");
+                history.push(nextPath);
             }
             else {
                 authReducer({
@@ -156,14 +155,44 @@ function AuthContextProvider(props) {
         }
     }
 
-    auth.logoutUser = async function () {
+    auth.logoutUser = async function (nextPath = "/") {
         const response = await authRequestSender.logoutUser();
         if (response.status === 200) {
             authReducer({
                 type: AuthActionType.LOGOUT_USER,
                 payload: null
             })
-            history.push("/");
+            history.push(nextPath);
+        }
+    }
+
+    auth.loginDemoUser = async function () {
+        try {
+            const response = await authRequestSender.loginDemoUser();
+            const responseData = await response.json();
+
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: responseData.user,
+                        loggedIn: true,
+                        errorMessage: null
+                    }
+                })
+                history.push("/playlists/");
+            } else {
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: auth.user,
+                        loggedIn: false,
+                        errorMessage: responseData.errorMessage
+                    }
+                })
+            }
+        } catch (error) {
+            console.error("Network error during demo login:", error);
         }
     }
 
