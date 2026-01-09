@@ -83,13 +83,14 @@ export default function AppBanner() {
         if (loggedIn && auth.user && auth.user.avatar) {
             return <img src={auth.user.avatar} alt="Avatar" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />;
         }
-        return <AccountCircle />;
+        return <AccountCircle sx={{ fontSize: 40, color: '#f3eee1e5' }} />;
 
     }
 
+
     return (
         <Box sx={{ flexGrow: 1 }} >
-            <AppBar position="static" style={{ borderTopRightRadius: 12 , borderTopLeftRadius: 12, backgroundColor: "#4F4557" }}>
+            <AppBar position="static" style={{ borderTopRightRadius: 12, borderTopLeftRadius: 12, backgroundColor: "#4F4557" }}>
                 <Toolbar>
                     <Typography
                         variant="h4"
@@ -97,15 +98,19 @@ export default function AppBanner() {
                         component="div"
                         sx={{ display: { xs: 'none', sm: 'block' } }}
                     >
-                        <Link onClick={handleHouseClick} style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
+                        <Link
+                            onClick={handleHouseClick}
+                            className="home-link"
+                            to='/'
+                        />
                     </Typography>
 
                     <Box sx={{ display: 'flex', gap: 2, ml: 2 }}>
                         <Link to='/playlists/' style={{ textDecoration: 'none' }}>
-                            <Button variant="contained" sx={{ bgcolor: '#6D5D6E', color: '#F4EEE0', borderRadius: "12px", textTransform: 'none' }}>Playlists</Button>
+                            <Button variant="contained" sx={{ bgcolor: '#6D5D6E', color: '#F4EEE0', borderRadius: "12px", textTransform: 'none', '&:hover': { bgcolor: '#675668ff' } }}>Playlists</Button>
                         </Link>
                         <Link to='/songs/' style={{ textDecoration: 'none' }}>
-                            <Button variant="contained" sx={{ bgcolor: '#6D5D6E', color: '#F4EEE0', borderRadius: "12px", textTransform: 'none' }}>Song Catalog</Button>
+                            <Button variant="contained" sx={{ bgcolor: '#6D5D6E', color: '#F4EEE0', borderRadius: "12px", textTransform: 'none', '&:hover': { bgcolor: '#675668ff' } }}>Song Catalog</Button>
                         </Link>
                     </Box>
 
@@ -119,6 +124,12 @@ export default function AppBanner() {
                             aria-haspopup="true"
                             onClick={handleProfileMenuOpen}
                             color="inherit"
+                            disableRipple
+                            sx={{
+                                '&:hover': {
+                                    backgroundColor: 'transparent'
+                                }
+                            }}
                         >
                             {getAccountMenu(auth.loggedIn)}
                         </IconButton>

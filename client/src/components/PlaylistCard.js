@@ -134,7 +134,10 @@ export default function PlaylistCard({ playlist }) {
                 <List sx={{ mt: 1, borderTop: '1px solid #ddd', color: '#2b2936ff' }}>
                     {playlist.songs.map((song, index) => (
                         <ListItem key={song._id}>
-                            <Typography>{index + 1}. {song.title} by {song.artist}</Typography>
+                            <Typography>
+                                <span style={{ color: '#6A5E6D' }}>{index + 1}{')'}</span>
+                                &nbsp;&nbsp;{song.title} by {song.artist}
+                            </Typography>
                         </ListItem>
                     ))}
                 </List>

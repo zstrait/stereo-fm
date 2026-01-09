@@ -41,6 +41,26 @@ body {
     font-family: "Sometype Mono", monospace;
 }
 
+.home-link {
+    width: 34px;
+    height: 32px;
+    display: block;
+    background-image: url('./images/home.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: transform 0.2s ease;
+    transform: translateY(-1px) ;
+    transform-origin: center;
+    opacity: .9;
+}
+
+.home-link:hover {
+    transform: scale(1.05) translateY(-1px); 
+    opacity: 1;
+}
+
+
 /* WELCOME PAGE */
 .welcome-container {
     padding-top: 38px;
