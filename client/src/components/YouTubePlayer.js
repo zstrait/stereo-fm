@@ -8,17 +8,14 @@ export default function YouTubePlayer({ videoId }) {
         setPlayerError(false);
     }, [videoId]);
 
-
     const getCleanVideoId = (rawInput) => {
         if (!rawInput) return null;
         if (rawInput.length === 11) return rawInput;
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = rawInput.match(regExp);
-
         if (match && match[2].length === 11) {
             return match[2];
         }
-
         return null;
     };
 
@@ -65,16 +62,24 @@ export default function YouTubePlayer({ videoId }) {
         );
     }
 
-
     return (
-        <YouTube
-            key={cleanVideoId}
-            videoId={cleanVideoId}
-            opts={opts}
-            onError={onPlayerError}
-        />
+        <div style={playerContainerStyle}>
+            <YouTube
+                key={cleanVideoId}
+                videoId={cleanVideoId}
+                opts={opts}
+                onError={onPlayerError}
+            />
+        </div>
     );
 }
+
+const playerContainerStyle = {
+    width: '100%',
+    height: '219px',
+    borderRadius: '16px',
+    overflow: 'hidden',
+};
 
 const placeholderStyle = {
     width: '100%',
@@ -85,4 +90,5 @@ const placeholderStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     color: 'white',
+    borderRadius: '16px',
 };

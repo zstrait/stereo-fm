@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth';
 import SongCardMenu from './SongCardMenu';
 import Box from '@mui/material/Box';
@@ -8,7 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export default function SongCard({ song, selected, onSelect }) {
-    const { store } = useContext(GlobalStoreContext);
     const { auth } = useContext(AuthContext);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
@@ -16,15 +14,16 @@ export default function SongCard({ song, selected, onSelect }) {
     const isSelected = selected;
 
     const cardStyle = {
-        backgroundColor: isSelected ? '#ffc107' : '#fff9c4',
-        border: isCreatedByUser ? '2px solid red' : '1px solid transparent',
+        backgroundColor: isSelected ? '#F7E396' : '#fff1cbcd',
+        border: isCreatedByUser ? '2px solid #c890a7b9' : '2px solid #c890a737',
         borderRadius: '8px',
         padding: '10px 15px',
         marginBottom: '10px',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
-        position: 'relative'
+        position: 'relative',
+        boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02), 0 0 0 1px rgba(43, 41, 54, 0.02)',
     };
 
     const handleCardClick = () => {

@@ -70,64 +70,95 @@ export default function SongCatalogScreen() {
     ];
 
     return (
-        <Box sx={{ display: 'flex', height: '85vh', backgroundColor: '#f5f5f5' }}>
-
-            {/* LEFT CONTAINER */}
-            <Box sx={{
-                width: '35%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                p: 2,
-                borderRight: '1px solid #ccc'
-            }}>
+        <Box sx={{ display: 'flex', height: '85vh', backgroundColor: '#F4EEE0' }}>
+            <Box sx={{ width: '35%', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2, justifyContent: 'space-between', borderRight: '1px solid #ccc' }}>
                 <SearchMenu
                     title="Songs Catalog"
                     inputFields={['Title', 'Artist', 'Year']}
                     onSearch={handleSearch}
                 />
 
-                <Box sx={{ mt: 4, width: '100%' }}>
+                {auth.loggedIn && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', transform: 'translate(-248px, 42px)' }}>
+                        <Button
+                            variant="text"
+                            sx={{
+                                bgcolor: 'transparent',
+                                color: '#96818ce1',
+                                transform: 'translate(80px,-64px)',
+                                borderRadius: 5,
+                                px: 1,
+                                minWidth: 'auto',
+                                position: 'relative',
+                                transition: 'color 0.3s ease',
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: '2.5rem'
+                                },
+                                '&:hover': {
+                                    bgcolor: 'transparent',
+                                    color: '#5b4575ea',
+                                    '& .song-text': {
+                                        maxWidth: '120px',
+                                        opacity: 1,
+                                        paddingRight: '8px'
+                                    }
+                                },
+                                '& .song-text': {
+                                    position: 'absolute',
+                                    left: '100%',
+                                    maxWidth: 0,
+                                    opacity: 0,
+                                    paddingRight: 0,
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    transition: 'all 0.3s ease',
+                                    textDecoration: 'underline',
+                                    textUnderlineOffset: '3px',
+                                    textDecorationThickness: '1px',
+                                    fontSize: '1rem'
+                                }
+                            }}
+                            onClick={handleNewSong}
+                        >
+                            <span className="song-text">New Song</span>
+                            <AddCircleOutlineIcon />
+                        </Button>
+                    </Box>
+                )}
+
+                <Box sx={{
+                    width: '100%',
+                    mb: 2,
+                    transform: auth.loggedIn ? 'translateY(-32px)' : 'translateY(-32px)'
+                }}>
                     <YouTubePlayer videoId={selectedSong?.youTubeId} />
                 </Box>
             </Box>
 
-            {/* RIGHT CONTAINER */}
-            <Box sx={{
-                width: '65%',
-                display: 'flex',
-                flexDirection: 'column',
-                p: 2
-            }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ width: '65%', display: 'flex', flexDirection: 'column', p: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, transform: 'translateY(2px)' }}>
                     <SortMenu
                         sortOptions={songSortOptions}
                         onSort={handleSort}
                         currentSortValue={store.sortCriteria}
                     />
-                    <Typography variant="h6">{store.songCount} Songs</Typography>
+                    <Typography variant="h6" sx={{ color: '#393646' }}>{store.songCount} Songs</Typography>
                 </Box>
 
-                <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2 }}>
-                    {store.songCatalog && store.songCatalog.map((song) => (
-                        <SongCard
-                            key={song._id}
-                            song={song}
-                            selected={song._id === selectedSongId}
-                            index={0}
-                            onSelect={() => handleSelectSong(song._id)}
-                        />
-                    ))}
-                </Box>
-
-                {auth.loggedIn && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button variant="contained" sx={{ borderRadius: 5, px: 3, gap: 1 }} onClick={handleNewSong}>
-                            <AddCircleOutlineIcon />
-                            New Song
-                        </Button>
+                <Box sx={{ flexGrow: 1, overflow: 'hidden', mb: 2, paddingBottom: '24px' }}>
+                    <Box sx={{ height: '100%', overflowY: 'auto', px: 2, paddingTop: '6px' }}>
+                        {store.songCatalog && store.songCatalog.map((song) => (
+                            <SongCard
+                                key={song._id}
+                                song={song}
+                                selected={song._id === selectedSongId}
+                                index={0}
+                                onSelect={() => handleSelectSong(song._id)}
+                            />
+                        ))}
                     </Box>
-                )}
+                </Box>
+
                 <AddSongModal />
                 <RemoveSongModal />
                 <EditSongModal />
