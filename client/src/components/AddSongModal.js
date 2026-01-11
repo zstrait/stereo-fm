@@ -1,22 +1,22 @@
 import { useContext, useState, useEffect } from 'react';
 import { GlobalStoreContext } from '../store';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Divider from '@mui/material/Divider';
+import { Box, Modal, Typography, Button, TextField } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
+    width: 450,
+    bgcolor: '#F4EEE0',
+    border: 'none',
+    borderRadius: '12px',
+    boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+    p: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden'
 };
 
 export default function AddSongModal() {
@@ -55,12 +55,10 @@ export default function AddSongModal() {
 
     const handleConfirm = () => {
         const id = parseYouTubeId(formData.youTubeId);
-        
         if (!id) {
             setError(true);
             return;
         }
-
         store.createSong(formData.title, formData.artist, formData.year, id);
     };
 
@@ -76,28 +74,98 @@ export default function AddSongModal() {
             onClose={handleCancel}
         >
             <Box sx={style}>
-                <Typography variant="h4" component="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
-                    Add Song
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
+                <Box sx={{
+                    bgcolor: '#4F4557',
+                    color: 'white',
+                    p: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                }}>
+                    <AddIcon sx={{fontSize:'32px'}}/>
+                    <Typography variant="h6" component="h2">
+                        Add Song
+                    </Typography>
+                </Box>
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField label="Title" fullWidth value={formData.title} onChange={handleChange('title')} />
-                    <TextField label="Artist" fullWidth value={formData.artist} onChange={handleChange('artist')} />
-                    <TextField label="Year" fullWidth value={formData.year} onChange={handleChange('year')} />
+                <Box sx={{
+                    p: 3,
+                    background: 'linear-gradient(180deg, #F4EEE0 0%, #e6e0d4 100%)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2
+                }}>
+                    <TextField 
+                        label="Title" 
+                        fullWidth 
+                        value={formData.title} 
+                        onChange={handleChange('title')}
+                        sx={{
+                            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#4F4557' } },
+                            '& label.Mui-focused': { color: '#4F4557' },
+                        }}
+                    />
+                    <TextField 
+                        label="Artist" 
+                        fullWidth 
+                        value={formData.artist} 
+                        onChange={handleChange('artist')}
+                        sx={{
+                            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#4F4557' } },
+                            '& label.Mui-focused': { color: '#4F4557' },
+                        }}
+                    />
+                    <TextField 
+                        label="Year" 
+                        fullWidth 
+                        value={formData.year} 
+                        onChange={handleChange('year')}
+                        sx={{
+                            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#4F4557' } },
+                            '& label.Mui-focused': { color: '#4F4557' },
+                        }}
+                    />
                     <TextField 
                         label="YouTube Link" 
                         fullWidth 
                         value={formData.youTubeId} 
                         onChange={handleChange('youTubeId')} 
                         error={error}
-                        helperText={error ? "Invalid YouTube Link Format" : ""}
+                        helperText={error ? "Invalid YouTube Link" : ""}
+                        sx={{
+                            '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#4F4557' } },
+                            '& label.Mui-focused': { color: '#4F4557' },
+                        }}
                     />
-                </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
-                    <Button variant="contained" onClick={handleConfirm} disabled={isButtonDisabled}>Confirm</Button>
-                    <Button variant="outlined" onClick={handleCancel}>Cancel</Button>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+                         <Button
+                            variant="contained"
+                            onClick={handleConfirm}
+                            disabled={isButtonDisabled}
+                            sx={{
+                                bgcolor: '#6D5D6E', 
+                                '&:hover': { bgcolor: '#5c4e5d' }
+                            }}
+                        >
+                            Confirm
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={handleCancel}
+                            sx={{
+                                color: '#4F4557',
+                                borderColor: '#4F4557',
+                                '&:hover': {
+                                    backgroundColor: '#4f455722',
+                                    borderColor: '#3A3341', 
+                                    color: '#3A3341' 
+                                }
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                    </Box>
                 </Box>
             </Box>
         </Modal>

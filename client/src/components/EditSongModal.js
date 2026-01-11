@@ -134,7 +134,7 @@ export default function EditSongModal() {
                         value={formData.youTubeId} 
                         onChange={handleChange('youTubeId')} 
                         error={error}
-                        helperText={error ? "Invalid YouTube Link Format" : ""}
+                        helperText={error ? "Invalid YouTube Link" : ""}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '&.Mui-focused fieldset': { borderColor: '#4F4557' },
