@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Sometype+Mono:ital,wght@0,400..700;1,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap');
+
+* {
+    font-family: "Ubuntu Sans Mono", monospace !important;
+}
 
 :root {
     --swatch-foundation: #eeeedd;
@@ -17,7 +22,6 @@ body {
 
 #root {
     background-color: var(--swatch-primary);
-    font-family: "Sometype Mono", monospace;
     position: absolute;
     width: 80%;
     left: 10%;
@@ -37,9 +41,6 @@ body {
 }
 
 /* APP BANNER */
-.app-banner {
-    font-family: "Sometype Mono", monospace;
-}
 
 .home-link {
     width: 34px;
@@ -50,16 +51,15 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     transition: transform 0.2s ease;
-    transform: translateY(-1px) ;
+    transform: translateY(-1px);
     transform-origin: center;
     opacity: .9;
 }
 
 .home-link:hover {
-    transform: scale(1.05) translateY(-1px); 
+    transform: scale(1.05) translateY(-1px);
     opacity: 1;
 }
-
 
 /* WELCOME PAGE */
 .welcome-container {
@@ -72,11 +72,15 @@ body {
     color: #393646;
 }
 
+.welcome-container, .welcome-container * {
+    font-family: "Sometype Mono", monospace !important;
+}
+
 .welcome-title {
     font-size: 72px;
     font-weight: 600;
     margin-bottom: -32px;
-    transform: translate(-2%,-8%);
+    transform: translate(-2%, -8%);
 }
 
 .welcome-logo {
