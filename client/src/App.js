@@ -60,6 +60,13 @@ const App = () => {
                     <AppLayout />
                 </GlobalStoreContextProvider>
             </AuthContextProvider>
+            <a 
+                href="https://github.com/zstrait/stereo-fm" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="github-logo"
+            >
+            </a>
         </BrowserRouter>
     );
 }
