@@ -75,15 +75,44 @@ export default function PlaylistSongCard({ song, index, isActive, onClick }) {
 
     const editingStyle = {
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        border: '1px solid black',
+        gap: 2,
+        border: '2px solid black',
         bgcolor: '#fff9c4',
         mb: 1,
-        borderRadius: 2,
+        borderRadius: '8px',
         p: 1.5,
-        width: '98%',
-        mx: 'auto'
+        cursor: 'grab',
+        boxShadow: '2px 2px 0px rgba(0,0,0,0.2)',
+        transition: 'all 0.15s ease',
+        '&:hover': {
+            bgcolor: '#fffacd',
+            transform: 'translate(-1px, -1px)',
+            boxShadow: '3px 3px 0px rgba(0,0,0,0.25)'
+        },
+        '&:active': {
+            cursor: 'grabbing'
+        }
+    };
+
+    const closeButtonStyle = {
+        border: '2px solid black',
+        borderRadius: '6px',
+        bgcolor: 'white',
+        width: 32,
+        height: 32,
+        padding: 0,
+        flexShrink: 0,
+        boxShadow: '1px 1px 0px black',
+        transition: 'all 0.1s ease',
+        '&:hover': { 
+            bgcolor: '#fee',
+            '& .MuiSvgIcon-root': { color: '#dc2626' }
+        },
+        '&:active': {
+            transform: 'translate(1px, 1px)',
+            boxShadow: 'none'
+        }
     };
 
     return (
@@ -95,16 +124,37 @@ export default function PlaylistSongCard({ song, index, isActive, onClick }) {
             onDrop={handleDrop}
             sx={editingStyle}
         >
-            <Typography variant="h6" sx={{ width: '40px' }}>
-                {index + 1}.
+            <Typography 
+                variant="body2" 
+                fontWeight="bold"
+                sx={{ 
+                    minWidth: '32px',
+                    color: '#64748B',
+                    fontFamily: 'monospace',
+                    fontSize: '0.95rem'
+                }}
+            >
+                {index + 1})
             </Typography>
-            <Box sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
-                    {song.title} by {song.artist} ({song.year})
+            <Box sx={{ flexGrow: 1, overflow: 'hidden', minWidth: 0 }}>
+                <Typography 
+                    variant="body1" 
+                    fontWeight="bold" 
+                    noWrap
+                    sx={{ color: '#1E293B', fontSize: '0.95rem' }}
+                >
+                    {song.title}
+                </Typography>
+                <Typography 
+                    variant="body2" 
+                    noWrap
+                    sx={{ color: '#64748B', fontSize: '0.85rem' }}
+                >
+                    {song.artist} ({song.year})
                 </Typography>
             </Box>
-            <IconButton onClick={handleRemoveSong}>
-                <CloseIcon sx={{ fontSize: 30 }} />
+            <IconButton onClick={handleRemoveSong} sx={closeButtonStyle}>
+                <CloseIcon sx={{ fontSize: 18, color: '#334155' }} />
             </IconButton>
         </Box>
     );
