@@ -1,16 +1,9 @@
 import { useContext, useState } from 'react';
-import AuthContext from '../auth'
-import ErrorModal from './ErrorModal'
-import Copyright from './Copyright'
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
+import AuthContext from '../auth';
+import ErrorModal from './ErrorModal';
+import Copyright from './Copyright';
+import { Avatar, Box, Button, Grid, Link, TextField, Typography, Container } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 
 export default function LoginScreen() {
     const { auth } = useContext(AuthContext);
@@ -29,6 +22,13 @@ export default function LoginScreen() {
 
     const isButtonDisabled = !email || !password;
 
+    const textFieldStyle = {
+        '& .MuiOutlinedInput-root': {
+            '&.Mui-focused fieldset': { borderColor: '#4F4557' },
+        },
+        '& label.Mui-focused': { color: '#4F4557' },
+    };
+
     return (
         <Container component="main" maxWidth="xs" >
             <Box
@@ -37,12 +37,13 @@ export default function LoginScreen() {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    color: '#393646' 
                 }}
             >
                 <Avatar sx={{ m: 1, bgcolor: '#6D5D6E' }}>
                     <LockOutlinedIcon />
                 </Avatar>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" sx={{fontWeight:'450'}}>
                     Sign in
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -57,6 +58,7 @@ export default function LoginScreen() {
                         autoFocus
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        sx={textFieldStyle} 
                     />
                     <TextField
                         margin="normal"
@@ -69,19 +71,37 @@ export default function LoginScreen() {
                         autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        sx={textFieldStyle} 
                     />
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
+                        sx={{ 
+                            mt: 3, 
+                            mb: 2,
+                            bgcolor: '#4F4557', 
+                            '&:hover': {
+                                bgcolor: '#6D5D6E'
+                            }
+                        }}
                         disabled={isButtonDisabled}
                     >
                         Sign In
                     </Button>
-                    <Grid container>
+                    <Grid container justifyContent="flex-end"> 
                         <Grid item>
-                            <Link href="/register/" variant="body2">
+                            <Link 
+                                href="/register/" 
+                                variant="body2"
+                                sx={{
+                                    color: '#6D5D6E',
+                                    textDecoration: 'none',
+                                    '&:hover': {
+                                        textDecoration: 'underline'
+                                    }
+                                }}
+                            >
                                 Don't have an account? Sign Up
                             </Link>
                         </Grid>

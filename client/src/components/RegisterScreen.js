@@ -159,32 +159,23 @@ export default function RegisterScreen() {
     if (auth.errorMessage !== null && !isEmailError) {
         modalJSX = <ErrorModal />;
     }
+const textFieldStyle = {
+        '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#4F4557' } },
+        '& label.Mui-focused': { color: '#4F4557' },
+    };
 
     return (
         <Container component="main" maxWidth="md">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <Avatar sx={{ m: 1, bgcolor: '#6D5D6E' }}>
-                    <LockOutlinedIcon />
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Create Account
-                </Typography>
+            <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Avatar sx={{ m: 1, bgcolor: '#6D5D6E' }}><LockOutlinedIcon /></Avatar>
+                <Typography component="h1" variant="h5" sx={{fontWeight:'450'}}>Create Account</Typography>
+                
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: 6, transform: 'translateX(-70px)' }}>
 
                         <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            position: 'relative',
-                            transform: 'translate(-20%, -35%)',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center',
+                            position: 'relative', transform: 'translate(-20%, -35%)',
                         }}>
                             <Box sx={{
                                 width: 100, height: 100, border: '1px solid grey', borderRadius: '50%',
@@ -198,18 +189,17 @@ export default function RegisterScreen() {
                                     <AccountCircle sx={{ fontSize: 100, color: 'grey' }} />
                                 )}
                             </Box>
-                            <Button sx={{ transform: 'translate(-65%, 40%)', }} variant="contained" component="label" size="small">
+                            <Button sx={{ 
+                                transform: 'translate(-65%, 40%)',
+                                bgcolor: '#4F4557', 
+                                '&:hover': { bgcolor: '#6D5D6E' }
+                            }} variant="contained" component="label" size="small">
                                 Upload
                                 <input type="file" hidden accept="image/*" onChange={handleFileRead} />
                             </Button>
-
                             <Box sx={{
-                                position: 'absolute',
-                                top: '101%',
-                                left: '50%',
-                                transform: 'translateX(-70%)',
-                                mt: 1,
-                                zIndex: 10
+                                position: 'absolute', top: '101%', left: '50%',
+                                transform: 'translateX(-70%)', mt: 1, zIndex: 10
                             }}>
                                 <DefaultPfpsMenu onSelectAvatar={setAvatar} />
                             </Box>
@@ -218,91 +208,41 @@ export default function RegisterScreen() {
                         <Box sx={{ width: '400px' }}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="userName"
-                                        label="User Name"
-                                        name="userName"
-                                        autoComplete="username"
-                                        value={formData.userName}
-                                        onChange={handleChange('userName')}
-                                        InputProps={{ endAdornment: getEndAdornment('userName') }}
-                                        autoFocus
-                                    />
+                                    <TextField required fullWidth id="userName" label="User Name" name="userName" value={formData.userName} onChange={handleChange('userName')} InputProps={{ endAdornment: getEndAdornment('userName') }} sx={textFieldStyle} autoFocus />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="email"
-                                        label="Email Address"
-                                        name="email"
-                                        autoComplete="email"
-                                        value={formData.email}
-                                        onChange={handleChange('email')}
-                                        InputProps={{ endAdornment: getEndAdornment('email') }}
-                                        error={isEmailError}
-                                    />
-                                    {isEmailError && (
-                                        <Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>
-                                            An account already exists with this email.
-                                        </Typography>
-                                    )}
+                                    <TextField required fullWidth id="email" label="Email Address" name="email" value={formData.email} onChange={handleChange('email')} InputProps={{ endAdornment: getEndAdornment('email') }} error={isEmailError} sx={textFieldStyle} />
+                                    {isEmailError && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>An account already exists with this email.</Typography>)}
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        name="password"
-                                        label="Password"
-                                        type="password"
-                                        id="password"
-                                        autoComplete="new-password"
-                                        value={formData.password}
-                                        onChange={handleChange('password')}
-                                        InputProps={{ endAdornment: getEndAdornment('password') }}
-                                        error={isPasswordShort}
-                                    />
-                                    {isPasswordShort && (
-                                        <Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>
-                                            Password must contain at least 8 characters.
-                                        </Typography>
-                                    )}
+                                    <TextField required fullWidth name="password" label="Password" type="password" id="password" value={formData.password} onChange={handleChange('password')} InputProps={{ endAdornment: getEndAdornment('password') }} error={isPasswordShort} sx={textFieldStyle} />
+                                    {isPasswordShort && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>Password must contain at least 8 characters.</Typography>)}
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        name="passwordVerify"
-                                        label="Confirm Password"
-                                        type="password"
-                                        id="passwordVerify"
-                                        autoComplete="new-password"
-                                        value={formData.passwordVerify}
-                                        onChange={handleChange('passwordVerify')}
-                                        InputProps={{ endAdornment: getEndAdornment('passwordVerify') }}
-                                        error={isPasswordMismatch}
-                                    />
-                                    {isPasswordMismatch && (
-                                        <Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>
-                                            Passwords do not match.
-                                        </Typography>
-                                    )}
+                                    <TextField required fullWidth name="passwordVerify" label="Confirm Password" type="password" id="passwordVerify" value={formData.passwordVerify} onChange={handleChange('passwordVerify')} InputProps={{ endAdornment: getEndAdornment('passwordVerify') }} error={isPasswordMismatch} sx={textFieldStyle} />
+                                    {isPasswordMismatch && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>Passwords do not match.</Typography>)}
                                 </Grid>
                             </Grid>
                             <Button
                                 type="submit"
                                 fullWidth
                                 variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
+                                sx={{ 
+                                    mt: 3, mb: 2, 
+                                    bgcolor: '#4F4557', 
+                                    '&:hover': { bgcolor: '#6D5D6E' } 
+                                }}
                                 disabled={isButtonDisabled}
                             >
                                 Create Account
                             </Button>
                             <Grid container justifyContent="flex-end">
                                 <Grid item>
-                                    <Link href="/login/" variant="body2">
+                                    <Link href="/login/" variant="body2" sx={{
+                                        color: '#6D5D6E',
+                                        textDecoration: 'none',
+                                        '&:hover': { textDecoration: 'underline' }
+                                    }}>
                                         Already have an account? Sign in
                                     </Link>
                                 </Grid>

@@ -3,7 +3,7 @@ import AuthContext from '../auth';
 import ErrorModal from './ErrorModal';
 import Copyright from './Copyright';
 import { useHistory } from 'react-router-dom';
-import DefaultPfpsMenu from './DefaultPfpsMenu'; 
+import DefaultPfpsMenu from './DefaultPfpsMenu';
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -163,22 +163,22 @@ export default function EditAccountScreen() {
     if (auth.errorMessage !== null && !isEmailError) {
         modalJSX = <ErrorModal />;
     }
+    const textFieldStyle = {
+        '& .MuiOutlinedInput-root': { '&.Mui-focused fieldset': { borderColor: '#4F4557' } },
+        '& label.Mui-focused': { color: '#4F4557' },
+    };
 
     return (
         <Container component="main" maxWidth="md">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Avatar sx={{ m: 1, bgcolor: '#6D5D6E' }}><LockOutlinedIcon /></Avatar>
-                <Typography component="h1" variant="h5">Edit Account</Typography>
+                <Typography component="h1" variant="h5" sx={{ fontWeight: '450' }}>Edit Account</Typography>
 
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, width: '100%', display: 'flex', justifyContent: 'center' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'start', gap: 6, transform: 'translateX(-70px)' }}>
-
                         <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            position: 'relative',
-                            transform: 'translate(-20%, -35%)',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center',
+                            position: 'relative', transform: 'translate(-20%, -35%)',
                         }}>
                             <Box sx={{
                                 width: 100, height: 100, border: '1px solid grey', borderRadius: '50%',
@@ -192,46 +192,55 @@ export default function EditAccountScreen() {
                                     <AccountCircle sx={{ fontSize: 100, color: 'grey' }} />
                                 )}
                             </Box>
-                            <Button sx={{ transform: 'translate(-65%, 40%)', }} variant="contained" component="label" size="small">
+                            <Button sx={{
+                                transform: 'translate(-65%, 40%)',
+                                bgcolor: '#4F4557',
+                                '&:hover': { bgcolor: '#6D5D6E' }
+                            }} variant="contained" component="label" size="small">
                                 Upload
                                 <input type="file" hidden accept="image/*" onChange={handleFileRead} />
                             </Button>
-
                             <Box sx={{
-                                position: 'absolute',
-                                top: '101%',
-                                left: '50%',
-                                transform: 'translateX(-70%)',
-                                mt: 1,
-                                zIndex: 10
+                                position: 'absolute', top: '101%', left: '50%',
+                                transform: 'translateX(-70%)', mt: 1, zIndex: 10
                             }}>
                                 <DefaultPfpsMenu onSelectAvatar={setAvatar} />
                             </Box>
                         </Box>
-
                         <Box sx={{ width: '400px' }}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <TextField required fullWidth id="userName" label="User Name" name="userName" autoComplete="username" value={formData.userName} onChange={handleChange('userName')} InputProps={{ endAdornment: getEndAdornment('userName') }} autoFocus />
+                                    <TextField required fullWidth id="userName" label="User Name" name="userName" value={formData.userName} onChange={handleChange('userName')} InputProps={{ endAdornment: getEndAdornment('userName') }} sx={textFieldStyle} autoFocus />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField required fullWidth id="email" label="Email Address" name="email" autoComplete="email" value={formData.email} disabled />
+                                    <TextField required fullWidth id="email" label="Email Address" name="email" value={formData.email} disabled sx={textFieldStyle} />
                                     {isEmailError && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>An account already exists with this email.</Typography>)}
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField required fullWidth name="password" label="Password" type="password" id="password" autoComplete="new-password" value={formData.password} onChange={handleChange('password')} InputProps={{ endAdornment: getEndAdornment('password') }} error={isPasswordShort} />
-                                    {isPasswordShort && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>Password must contain at least 8 characters.</Typography>)}
+                                    <TextField required fullWidth name="password" label="Password" type="password" id="password" value={formData.password} onChange={handleChange('password')} InputProps={{ endAdornment: getEndAdornment('password') }} error={isPasswordShort} sx={textFieldStyle} />
+                                    {isPasswordShort && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>Password must be at least 8 characters.</Typography>)}
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <TextField required fullWidth name="passwordVerify" label="Confirm Password" type="password" id="passwordVerify" autoComplete="new-password" value={formData.passwordVerify} onChange={handleChange('passwordVerify')} InputProps={{ endAdornment: getEndAdornment('passwordVerify') }} error={isPasswordMismatch} />
+                                    <TextField required fullWidth name="passwordVerify" label="Confirm Password" type="password" id="passwordVerify" value={formData.passwordVerify} onChange={handleChange('passwordVerify')} InputProps={{ endAdornment: getEndAdornment('passwordVerify') }} error={isPasswordMismatch} sx={textFieldStyle} />
                                     {isPasswordMismatch && (<Typography variant="caption" color="error" sx={{ ml: 1, width: '150px' }}>Passwords do not match.</Typography>)}
                                 </Grid>
                             </Grid>
                             <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                                <Button type="submit" fullWidth variant="contained" disabled={isButtonDisabled}>
+                                <Button type="submit" fullWidth variant="contained" disabled={isButtonDisabled} sx={{
+                                    bgcolor: '#4F4557',
+                                    '&:hover': { bgcolor: '#6D5D6E' }
+                                }}>
                                     Submit Changes
                                 </Button>
-                                <Button fullWidth variant="outlined" onClick={handleCancel}>
+                                <Button fullWidth variant="outlined" onClick={handleCancel} sx={{
+                                    color: '#4F4557',
+                                    borderColor: '#4F4557',
+                                    '&:hover': {
+                                        backgroundColor: '#4f455722',
+                                        borderColor: '#3A3341',
+                                        color: '#3A3341'
+                                    }
+                                }}>
                                     Cancel
                                 </Button>
                             </Box>

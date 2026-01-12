@@ -50,7 +50,7 @@ export default function DefaultPfpsMenu({ onSelectAvatar }) {
                                     transition: 'transform 0.2s',
                                     '&:hover': {
                                         transform: 'scale(1.1)',
-                                        outline: '2px solid #1976d2'
+                                        outline: '2px solid #6D5D6E'
                                     }
                                 }}
                             />
