@@ -243,6 +243,13 @@ export default function PlayPlaylistModal() {
     const [duration, setDuration] = useState(0);
 
     useEffect(() => {
+        const currentSong = store.currentList?.songs[currentIndex];
+        if (currentSong) {
+            store.incrementListens(currentSong._id, false);
+        }
+    }, [currentIndex, store.currentList]);
+
+    useEffect(() => {
         if (store.currentModal === "PLAY_PLAYLIST") {
             setCurrentIndex(0);
             setIsPlaying(true);
@@ -293,7 +300,7 @@ export default function PlayPlaylistModal() {
         }
     };
 
-    const handleSongClick = (index) => {
+     const handleSongClick = (index) => {
         setCurrentIndex(index);
         setIsPlaying(true);
     };
@@ -411,7 +418,7 @@ export default function PlayPlaylistModal() {
                                 />
                             ) : (
                                 <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#A7C1A8' }}>
-                                    <Typography variant="caption" sx={{fontSize:'16px'}} >(Playlist is empty)</Typography>
+                                    <Typography variant="caption" sx={{ fontSize: '16px' }} >(Playlist is empty)</Typography>
                                 </Box>
                             )}
                         </Box>

@@ -469,13 +469,16 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.incrementListens = function (songId) {
+    store.incrementListens = function (songId, shouldReload = true) {
         async function asyncIncrement() {
             await storeRequestSender.incrementListens(songId);
-            store.loadSongs();
+            if (shouldReload) {
+                store.loadSongs();
+            }
         }
         asyncIncrement();
     }
+
 
     store.setSearchCriteria = function (searchCriteria) {
         storeReducer({
