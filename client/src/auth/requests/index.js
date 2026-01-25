@@ -1,10 +1,10 @@
 export const getLoggedIn = () => {
-    return fetch('https://stereofm-backend.onrender.com/auth/loggedIn/', {
+    return fetch('https://stereofm-backend.onrender.com/auth/loggedIn', {
         credentials: 'include',
     });
 }
 export const loginUser = (email, password) => {
-    return fetch('https://stereofm-backend.onrender.com/auth/login/', {
+    return fetch('https://stereofm-backend.onrender.com/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -17,13 +17,13 @@ export const loginUser = (email, password) => {
     });
 }
 export const logoutUser = () => {
-    return fetch('https://stereofm-backend.onrender.com/auth/logout/', {
+    return fetch('https://stereofm-backend.onrender.com/auth/logout', {
         credentials: 'include',
     });
 }
 
 export const registerUser = (userName, email, password, passwordVerify, avatar) => {
-    return fetch('https://stereofm-backend.onrender.com/auth/register/', {
+    return fetch('https://stereofm-backend.onrender.com/auth/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export const updateUser = (email, userData) => {
 }
 
 export const loginDemoUser = () => {
-    return fetch('https://stereofm-backend.onrender.com/auth/login-demo/', {
+    return fetch('https://stereofm-backend.onrender.com/auth/login-demo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
