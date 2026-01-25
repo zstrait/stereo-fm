@@ -1,5 +1,5 @@
 export const createPlaylist = () => {
-    return fetch('http://localhost:4000/store/playlist/', {
+    return fetch('https://stereofm-backend.onrender.com/store/playlist/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -9,18 +9,18 @@ export const createPlaylist = () => {
     });
 }
 export const deletePlaylistById = (id) => {
-    return fetch(`http://localhost:4000/store/playlist/${id}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/playlist/${id}`, {
         method: 'DELETE',
         credentials: 'include',
     });
 }
 export const getPlaylistById = (id) => {
-    return fetch(`http://localhost:4000/store/playlist/${id}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/playlist/${id}`, {
         credentials: 'include',
     });
 }
 export const updatePlaylistById = (id, playlist) => {
-    return fetch(`http://localhost:4000/store/playlist/${id}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/playlist/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -42,14 +42,14 @@ export const getPlaylists = (criteria, sort) => {
     }
     if (sort) params.append('sort', sort);
 
-    return fetch(`http://localhost:4000/store/playlists?${params.toString()}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/playlists?${params.toString()}`, {
         method: 'GET',
         credentials: 'include',
     });
 }
 
 export const addSongToPlaylist = (playlistId, songId) => {
-    return fetch(`http://localhost:4000/store/playlist/${playlistId}/song`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/playlist/${playlistId}/song`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export const addSongToPlaylist = (playlistId, songId) => {
 }
 
 export const createSong = (songData) => {
-    return fetch(`http://localhost:4000/store/song`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/song`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const createSong = (songData) => {
 }
 
 export const updateSong = (songId, songData) => {
-    return fetch(`http://localhost:4000/store/song/${songId}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/song/${songId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export const updateSong = (songId, songData) => {
 }
 
 export const deleteSong = (songId) => {
-    return fetch(`http://localhost:4000/store/song/${songId}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/song/${songId}`, {
         method: 'DELETE',
         credentials: 'include',
     });
@@ -95,21 +95,21 @@ export const getSongs = (criteria, sort) => {
     if (criteria.year) params.append('year', criteria.year);
     if (sort) params.append('sort', sort);
 
-    return fetch(`http://localhost:4000/store/songs?${params.toString()}`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/songs?${params.toString()}`, {
         method: 'GET',
         credentials: 'include',
     });
 }
 
 export const incrementListens = (songId) => {
-    return fetch(`http://localhost:4000/store/song/${songId}/listen`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/song/${songId}/listen`, {
         method: 'PUT',
         credentials: 'include',
     });
 }
 
 export const incrementPlaylistListens = (playlistId) => {
-    return fetch(`http://localhost:4000/store/playlist/${playlistId}/listen`, {
+    return fetch(`https://stereofm-backend.onrender.com/store/playlist/${playlistId}/listen`, {
         method: 'PUT',
         credentials: 'include', 
     });
