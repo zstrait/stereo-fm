@@ -17,6 +17,10 @@ export default function PlaylistsScreen() {
     const { auth } = useContext(AuthContext);
 
     useEffect(() => {
+        store.setSortCriteria("User Name (A-Z)");
+    }, []);
+
+    useEffect(() => {
         store.loadPlaylists();
     }, [store.searchCriteria, store.sortCriteria]);
 

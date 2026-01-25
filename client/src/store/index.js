@@ -49,7 +49,7 @@ function GlobalStoreContextProvider(props) {
         listMarkedForDeletion: null,
         currentView: "HOME",
         searchCriteria: {},
-        sortCriteria: "Title (A-Z)",
+        sortCriteria: null,
         songCatalog: [],
         songCount: 0
     });

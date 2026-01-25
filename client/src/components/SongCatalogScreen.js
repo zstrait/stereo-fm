@@ -19,6 +19,10 @@ export default function SongCatalogScreen() {
     const [selectedSongId, setSelectedSongId] = useState(null);
 
     useEffect(() => {
+        store.setSortCriteria("Title (A-Z)");
+    }, []);
+
+    useEffect(() => {
         store.loadSongs();
         store.loadPlaylists();
     }, [store.searchCriteria, store.sortCriteria]);
